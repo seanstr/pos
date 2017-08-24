@@ -1,13 +1,22 @@
 <template>
-  <q-modal ref="basicModal" class="minimized" :content-css="{minWidth: '80vw', minHeight: '80vh'}">
-    <h4>Basic Modal</h4>
+  <q-modal class="minimized" ref="basicModal">
+    <p>Basic Modal</p>
     <button class="primary" @click="$refs.basicModal.close()">Close</button>
   </q-modal>   
 </template>
 <script>
+  import {
+    QBtn,
+    QModal
+  } from 'quasar'
+
   export default {
+    components: {
+      QBtn,
+      QModal
+    },
     methods: {
-      open: function () {
+      open () {
         this.$refs.basicModal.open()
       }
     }

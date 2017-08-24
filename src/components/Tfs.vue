@@ -16,78 +16,23 @@
         <q-side-link item icon="mail" @to="openModal()">
           <q-item-main label="Start the day" />
         </q-side-link>
-        <q-side-link item :to="{path: '/', exact: true}">
-          <q-item-side icon="mail" />
-          <q-item-main label="Product Data" />
-        </q-side-link>
       </q-list>
     </div>
 
     <q-btn icon-right="add" @click="startNewTransaction()" color="primary" class="full-width">Start New Transaction</q-btn>
-    <q-card ref="show-summary">
-      <div class="card-content">
-        <div class="row">
-          <span class="width-1of4">{{currentShow.dateOfShow}}</span>
-          <span class="auto">{{currentShow.market}}</span>
-          <span class="auto">{{currentShow.teamName}}</span>
-          <span id="tx-total" class="auto">Total: {{currentShow.TotalSales}}</span>
-        </div>
-      </div>
+    <q-card>
+      <button class="primary" @click="saveToLocalStorage()">
+        Save to Local Storage
+      </button>
+      <button class="primary" @click="openModal()">
+        Open Modal
+      </button>
     </q-card>
+    <modal-test ref="modalTest" class="full-width"></modal-test>
 
-      <div v-if="page == 'transactions'">
-        <section id="transactions">
-          <q-card v-for="tx in tfpData.transactions" v-bind:currTx="tx" :key="tx.id">
-            <div :id="'btn'+tx.id" class="card-content">
-              <div class="row tx-summary-title text-italic light-paragraph item-delimiter">
-                <div class="width-1of5">Tx#</div>
-                <div class="width-1of3">Time</div>
-                <div class="width-2of4">Sum</div>
-                <div class="width-2of4">Tax</div>
-                <div class="width-2of4">Total</div>
-                <div class="auto">TxType</div>
-              </div>
-              <div class="row tx-summary">
-                <div class="width-1of5">{{tx.id}}</div>
-                <div class="width-1of3">{{('0' + new Date(tx.txTime).getHours()).slice(-2) + ':' + ('0' + new Date(tx.txTime).getMinutes()).slice(-2)}}</div>
-                <div class="row width-2of4"><div class="auto">{{tx.total}}</div></div>
-                <div class="row width-2of4"><div class="auto">{{tx.tax}}</div></div>
-                <div class="row width-2of4"><div class="auto">{{tx.total + tx.tax}}</div></div>
-                <div class="auto">{{tx.pp_or_pl}}</div>
-              </div>
-              <div class="row tx-rows-title text-italic" style="background-color: #dadada;">
-                <div class="offset-1of5"></div>
-                <div class="width-1of3">Product</div>
-                <div class="width-2of4">Description</div>
-                <div class="width-2of4">Qty</div>
-                <div class="width-2of4">Price</div>
-                <div class="auto">Tax</div>
-              </div>
-              <div class="row tx-row" v-for="item in selectedTransactionItems(tx)">
-                <div class="offset-1of5"></div>
-                <div class="width-1of3">{{item.productTypeDesc}}</div>
-                <div class="width-2of4">{{item.productItemDesc}}</div>
-                <div class="width-2of4">{{item.qty}}</div>
-                <div class="width-2of4">{{item.price}}</div>
-                <div class="auto">{{item.tax}}</div>
-              </div>
-            </div>
-          </q-card>
-        </section>
+    <daily-summary ref="dailySummary"></daily-summary>
 
-        <button class="primary" @click="saveToLocalStorage()">
-          Save to Local Storage
-        </button>
-        <button class="primary" @click="openModal()">
-          Open Modal
-        </button>
-        <modal-test ref="modalTest"></modal-test>
-        <daystart ref="dayStart"></daystart>
-      </div>
-    <div class="full-width">
-    </div>
-
-    <modal-test ref="modalTest"></modal-test>
+    <transactions ref="transactions"></transactions>
 
     <div id="stepper-section" class="list" style="overflow: scroll;" v-if="page == 'new-transactions'">
       <q-collapsible id="chooseProduct" opened icon="explore" :img="selectedProductTypeImage" :label="productTypeMessage" group="tx" ref="chooseProduct">
@@ -214,12 +159,21 @@
     QItemSide,
     QItemMain,
     QModal,
+    QCard,
+    QCardTitle,
+    QCardMain,
+    QCardActions,
+    QCardMedia,
+    QCardSeparator,
+    QSideLink,
     LocalStorage
   } from 'quasar'
 
   // import { LocalStorage, Dialog } from 'quasar'
   import TfpData from '../TfpData.json'
   import ModalTest from './ModalTest.vue'
+  import DailySummary from './DailySummary.vue'
+
   // import DayStart from './DayStart1.vue'
   // import DayStart1 from './DayStart1.vue'
 
@@ -250,8 +204,17 @@
       QItemSide,
       QItemMain,
       QModal,
-      ModalTest
+      QCard,
+      QCardTitle,
+      QCardMain,
+      QCardActions,
+      QCardMedia,
+      QCardSeparator,
+      QSideLink,
+      ModalTest,
+      DailySummary
     },
+
     data () {
       return {
         tfpData: tfpData,
