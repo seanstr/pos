@@ -19,9 +19,14 @@
       QCard,
       QCardMain
     },
+    events: {
+      onDayChanged: function (day) {
+        this.currentShow = day
+      }
+    },
     data () {
       return {
-        currentShow: { dateOfShow: 'Sep 2, 2014', market: 'Millarville', teamName: 'Team Sean', totalSales: '2000' }
+        currentShow: { dateOfShow: '', market: '', teamName: '', totalSales: '0' }
       }
     }
   }

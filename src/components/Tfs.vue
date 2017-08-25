@@ -14,7 +14,7 @@
       <q-list no-border link inset-separator>
         <q-list-header>Day Setup</q-list-header>
           <q-list item-separator link>
-            <q-item @click="openModal()">
+            <q-item @click="openDayStart()">
               <q-item-main label="Start the day" />
             </q-item>
             <q-item @click="openModal()">
@@ -26,7 +26,7 @@
 
     <q-btn icon-right="add" @click="startNewTransaction()" color="primary" class="full-width">Start New Transaction</q-btn>
 
-    <modal-test ref="modalTest" class="full-width"></modal-test>
+    <day-start ref="dayStart" class="full-width" :currentShow="currentShow" :tfpData="tfpData" v-on:day_saved="daySaved"></day-start>
 
     <daily-summary ref="dailySummary"></daily-summary>
 
@@ -142,9 +142,6 @@
       <button class="primary" @click="saveToLocalStorage()">
         Save to Local Storage
       </button>
-      <button class="primary" @click="openModal()">
-        Open Modal
-      </button>
     </q-card>
   </q-layout>
 </template>
@@ -173,6 +170,7 @@
     QCardSeparator,
     QSideLink,
     QPopover,
+    QSelect,
     LocalStorage
   } from 'quasar'
 
@@ -181,8 +179,8 @@
   import ModalTest from './ModalTest.vue'
   import DailySummary from './DailySummary.vue'
   import Transactions from './Transactions.vue'
+  import DayStart from './DayStart.vue'
 
-  // import DayStart from './DayStart1.vue'
   // import DayStart1 from './DayStart1.vue'
 
   // if (LocalStorage.isEmpty()) {
@@ -220,13 +218,18 @@
       QCardSeparator,
       QSideLink,
       QPopover,
+      QSelect,
       ModalTest,
       DailySummary,
-      Transactions
+      Transactions,
+      DayStart
     },
 
     data () {
       return {
+        select: '',
+        selectOptions: [ { label: 'Google', value: 'goog' }, { label: 'Facebook', value: 'fb' } ],
+
         tfpData: tfpData,
         // tfpData: LocalStorage.get.item('tfpData'),
 
@@ -267,7 +270,7 @@
         newItems: [],
         newTransaction: {},
 
-        currentShow: {},
+        currentShow: { dateOfShow: '', market: '', teamName: '', totalSales: 0 },
 
         // transaction arrays
         config: {
@@ -356,6 +359,13 @@
       // this.tfpData ? alert(this.tfpData) : alert('tfpData is null')
     },
 
+    events: {
+      onDaySaved: function (data) {
+        alert('in onDaySaved')
+        this.$broadcast('onDayChanged', data)
+      }
+    },
+
     computed: {
       selectedProductTypeItems () {
         if (this.productTypeSelected === '') return null
@@ -368,6 +378,7 @@
         return filtered
       }
     },
+
     methods: {
       selectedTransactionItems (tx) {
         if (this.tfpData.transactions === '') return null
@@ -394,7 +405,6 @@
           total: 0,
           tax: 0
         }
-        // alert(JSON.stringify(this.newTransaction, null, 4))
       },
 
       saveToLocalStorage: function () {
@@ -502,8 +512,18 @@
         this.page = 'transactions'
       },
 
-      openModal: function () {
-        this.$refs.modalTest.open()
+      openDayStart: function () {
+        this.$refs.dayStart.open()
+      },
+
+      daySaved: function (dayObj) {
+        alert('in daySaved')
+        this.currentShow = dayObj
+        let days = this.tfpData.dayInfo
+        let newId = Math.max(...Object.keys(days)) + 1
+        Object.assign(days, {[newId.toString()]: { id: newId, marketId: this.currentShow.market, showDate: this.currentShow.dateOfShow, teamId: this.currentShow.teamName }})
+        alert(JSON.stringify(this.currentShow))
+        this.onDaySaved(dayObj)
       }
     }
   }

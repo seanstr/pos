@@ -158,14 +158,14 @@
   },
   "dayInfo": {
     "1": { "id": 1, "marketId": 1, "showDate": "2017-06-17" },
-    "2": { "id": 1, "marketId": 1, "showDate": "2017-06-24" }
+    "2": { "id": 2, "marketId": 2, "showDate": "2017-06-24" }
   },
 
   "persons": {
     "1": { "id": 1, "name": "Sean Matthews" },
     "2": { "id": 2, "name": "Pete Tracy" },
     "3": { "id": 3, "name": "Jan Tracy" },
-    "4": { "id": 4, "name": "Connor" },
+    "4": { "id": 4, "name": "Zack" },
     "5": { "id": 5, "name": "Carol" }
   },
 
@@ -180,5 +180,10 @@
 
   "dayInfoPersons": {
     "1": { "id": 1, "dayInfoId": 1, "personId": 1 }
+  },
+
+  "teams": {
+    "1": { "id": 1, "name": "Team Sean", "persons": [1, 5]},
+    "2": { "id": 2, "name": "Team Tracy", "persons": [2, 3]}
   }
 }
