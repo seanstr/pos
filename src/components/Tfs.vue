@@ -13,9 +13,14 @@
     <div slot="right">
       <q-list no-border link inset-separator>
         <q-list-header>Day Setup</q-list-header>
-        <q-side-link item icon="mail" @to="openModal()">
-          <q-item-main label="Start the day" />
-        </q-side-link>
+          <q-list item-separator link>
+            <q-item @click="openModal()">
+              <q-item-main label="Start the day" />
+            </q-item>
+            <q-item @click="openModal()">
+              <q-item-main label="Data" />
+            </q-item>
+          </q-list>
       </q-list>
     </div>
 
@@ -167,6 +172,7 @@
     QCardMedia,
     QCardSeparator,
     QSideLink,
+    QPopover,
     LocalStorage
   } from 'quasar'
 
@@ -213,6 +219,7 @@
       QCardMedia,
       QCardSeparator,
       QSideLink,
+      QPopover,
       ModalTest,
       DailySummary,
       Transactions
@@ -494,10 +501,6 @@
       transactionList: function () {
         this.page = 'transactions'
       },
-
-      // startDay: function () {
-      // this.$refs.dayStart.open()
-      // }
 
       openModal: function () {
         this.$refs.modalTest.open()
