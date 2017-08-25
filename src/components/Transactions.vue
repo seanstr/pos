@@ -58,8 +58,23 @@
       QCardSeparator
     },
 
+    props: ['page', 'tfpData'],
+
     data () {
       return {
+      }
+    },
+
+    methods: {
+      selectedTransactionItems (tx) {
+        if (this.tfpData.transactions === '') return null
+        let _obj = this.tfpData.transactionItems
+        let _filtered = {}
+        Object.keys(_obj).forEach(function (key) {
+          if (_obj[key].transactionId === tx.id) _filtered[key] = _obj[key]
+        })
+        // alert(JSON.stringify(_filtered, null, 4))
+        return _filtered
       }
     }
   }

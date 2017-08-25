@@ -20,19 +20,12 @@
     </div>
 
     <q-btn icon-right="add" @click="startNewTransaction()" color="primary" class="full-width">Start New Transaction</q-btn>
-    <q-card>
-      <button class="primary" @click="saveToLocalStorage()">
-        Save to Local Storage
-      </button>
-      <button class="primary" @click="openModal()">
-        Open Modal
-      </button>
-    </q-card>
+
     <modal-test ref="modalTest" class="full-width"></modal-test>
 
     <daily-summary ref="dailySummary"></daily-summary>
 
-    <transactions ref="transactions"></transactions>
+    <transactions ref="transactions" :page="page" :tfpData="tfpData"></transactions>
 
     <div id="stepper-section" class="list" style="overflow: scroll;" v-if="page == 'new-transactions'">
       <q-collapsible id="chooseProduct" opened icon="explore" :img="selectedProductTypeImage" :label="productTypeMessage" group="tx" ref="chooseProduct">
@@ -140,6 +133,14 @@
         </div>
       </div>
     </div>
+    <q-card>
+      <button class="primary" @click="saveToLocalStorage()">
+        Save to Local Storage
+      </button>
+      <button class="primary" @click="openModal()">
+        Open Modal
+      </button>
+    </q-card>
   </q-layout>
 </template>
 
@@ -173,6 +174,7 @@
   import TfpData from '../TfpData.json'
   import ModalTest from './ModalTest.vue'
   import DailySummary from './DailySummary.vue'
+  import Transactions from './Transactions.vue'
 
   // import DayStart from './DayStart1.vue'
   // import DayStart1 from './DayStart1.vue'
@@ -212,7 +214,8 @@
       QCardSeparator,
       QSideLink,
       ModalTest,
-      DailySummary
+      DailySummary,
+      Transactions
     },
 
     data () {
