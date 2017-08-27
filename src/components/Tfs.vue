@@ -17,8 +17,8 @@
             <q-item @click="openDayStart()">
               <q-item-main label="Start the day" />
             </q-item>
-            <q-item @click="openModal()">
-              <q-item-main label="Data" />
+            <q-item @click="saveToLocalStorage()">
+              <q-item-main label="Save Data" />
             </q-item>
           </q-list>
       </q-list>
@@ -28,7 +28,7 @@
 
     <day-start ref="dayStart" class="full-width" :currentShow="currentShow" :tfpData="tfpData" v-on:day_saved="daySaved"></day-start>
 
-    <daily-summary ref="dailySummary"></daily-summary>
+    <daily-summary ref="dailySummary" :currentShow="currentShow" :tfpData="tfpData" :currentShowID="currentShowId"></daily-summary>
 
     <transactions ref="transactions" :page="page" :tfpData="tfpData"></transactions>
 
@@ -40,7 +40,7 @@
               <button :id="'btn'+item.id" class="tx-img-button" @click="selectProductType(item)" v-for="item in tfpData.productTypes">
                 <img :src= "'./statics/'+item.img" :title="item.name" style="width: 128px" />
                 <br/>
-                <span class="label">{{item.name}}</span> 
+                <span class="label">{{item.name}}</span>
               </button>
             </div>
           </div>
@@ -53,130 +53,102 @@
               <button :id="'btn'+item.id" class="tx-img-button" @click="selectProduct(item)" v-for="item in selectedProductTypeItems">
                 <img :src= "'./statics/'+item.img" :alt="item.desc" style="width: 128px" />
                 <br/>
-                <span class="label auto wrap" style="font-size: 8pt;">{{item.desc}}</span> 
+                <span class="label auto wrap" style="font-size: 8pt;">{{item.desc}}</span>
               </button>
             </div>
           </div>
         </div>
       </q-collapsible>
       <q-collapsible id="chooseQty" icon="shopping_cart" label="Choose Quantity" group="tx" ref="chooseQty">
-        <div class="">
-          <div class="row wrap">
-            <div class="width-1of1 auto">
-              <div class="row" style="margin-bottom: 5px;">
-                <label class="width-1of5">Quantity:</label>
-                <div class="auto" style="background-color: #cacaca;">
-                  <q-numeric class="width-1of5" v-model="qty" :min="1" :max="99"></q-numeric>
-                </div>
-              </div>
-              <div class="row">
-                <label class="width-1of5">Price:</label>
-                <input class="auto" style="background-color: #cacaca;" v-model="price" placeholder="Unit price">
-              </div>
-            </div>
-          </div>
-          <div class="row wrap">
-            <div class="width-1of12 auto">
-                <button class="primary" style="width: 250px; margin-bottom: 5px;" @click="finish()">Finish and Pay</button>
-                <button class="primary" style="width: 250px; margin-bottom: 5px;" @click="saveAndAddNew()">Add Another Item</button>
-            </div>
-          </div>
-        </div>
+        <q-field
+          icon="today"
+          label="Quantity">
+          <q-slider v-model="qty" :min="1" :max="50" label-always/>
+        </q-field>
+        <q-field icon="today" label="Price">
+          <q-input v-model="price"  placeholder="Unit price" />
+        </q-field>
+        <q-btn icon-right="add" @click="finish()" color="primary">Finish and Pay</q-btn>
+        <q-btn icon-right="add" @click="saveAndAddNew()" color="primary">Add Another Item</q-btn>
       </q-collapsible>
 
-      <hr/><br/><br/>
-
-      <div class="card">
-        <div class="card-title bg-primary text-white">
+      <q-card>
+        <q-card-title>
           Finish Tx
-        </div>
-        <div class="card-content card-force-top-padding">
-          <div class="row gutter wrap justify-stretch content-center">
-            <q-data-table class="width-1of1 auto" style="border: none;" :data="newItems" :config="config" :columns="columns">
-              <template slot="selection" scope="selection">
-                <button class="primary clear" @click="changeMessage(selection)">
-                  <i>edit</i>
-                </button>
-                <button class="primary clear" @click="deleteRow(selection)">
-                  <i>delete</i>
-                </button>
-              </template>
-            </q-data-table>
-            <div class="width-1of1 auto">
-              <div class="row" style="margin-bottom: 5px;">
-                <label class="width-1of5">Type:</label>
-                <div class="auto tx-switch">
-                  <label class="auto">pl</label>
-                  <q-toggle class="auto" v-model="pp" @input="selectPayType"></q-toggle>
-                  <label class="auto">pp</label>
-                </div>
-              </div>
-              <div class="row" style="margin-bottom: 5px;">
-                <label class="width-1of5">Tx Price:</label>
-                <input class="auto" style="background-color: #cacaca;" v-model="runningTotal" placeholder="Total">
-              </div>
-              <div class="row" style="margin-bottom: 5px;">
-                <label class="row width-1of5">+</label>
-                <input class="auto" style="background-color: #cacaca;" v-model="transactionTax" placeholder="Tax">
-              </div>
-              <div class="row" style="margin-bottom: 5px;">
-                <label class="row width-1of5">=</label>
-                <input class="auto" style="background-color: #cacaca;" v-model="transactionTotal" placeholder="Pay">
-              </div>
-            </div>
-          </div>
-          <div class="row wrap">
-            <div class="width-1of1">
-                <button class="primary width-1of1" style="width: 250px; margin-bottom: 5px;" @click="startNewTransaction()">
-                  Start New Transaction<i class="on-right">add</i>
-                </button>
-                <button class="primary width-1of1" style="width: 250px; margin-bottom: 5px;" @click="transactionList()">
-                  Back to Transaction List
-                </button>
-            </div>
-          </div>
-        </div>
-      </div>
+        </q-card-title>
+        <q-card-separator />
+        <q-card-main ref="finish-tx-table">
+          <q-data-table class="width-1of1 auto" style="border: none;" :data="newItems" :config="config" :columns="columns">
+            <template slot="selection" scope="selection">
+              <button class="primary clear" @click="changeMessage(selection)">
+                <i>edit</i>
+              </button>
+              <button class="primary clear" @click="deleteRow(selection)">
+                <i>delete</i>
+              </button>
+            </template>
+          </q-data-table>
+        </q-card-main>
+        <q-card-separator />
+        <q-card-main ref="finish-tx-data">
+          <q-field icon="today" label="Type">
+            <q-input v-model="pp"  placeholder="Unit price" />
+          </q-field>
+          <q-field icon="today" label="Tx Price">
+            <q-input v-model="runningTotal"  placeholder="Total" />
+          </q-field>
+          <q-field icon="today" label="+">
+            <q-input v-model="transactionTax"  placeholder="Tax" />
+          </q-field>
+          <q-field icon="today" label="=">
+            <q-input v-model="transactionTotal"  placeholder="Pay" />
+          </q-field>
+        </q-card-main>
+
+        <q-btn icon-right="add" @click="startNewTransaction()" color="primary">Start New Transaction</q-btn>
+        <q-btn icon-right="add" @click="transactionList()" color="primary">Back to Transaction List</q-btn>
+      </q-card>
     </div>
-    <q-card>
-      <button class="primary" @click="saveToLocalStorage()">
-        Save to Local Storage
-      </button>
-    </q-card>
   </q-layout>
 </template>
 
 <script>
   import {
+    date,
     dom,
     event,
     openURL,
-    QLayout,
-    QToolbar,
-    QToolbarTitle,
+    LocalStorage,
     QBtn,
-    QIcon,
-    QList,
-    QListHeader,
-    QItem,
-    QItemSide,
-    QItemMain,
-    QModal,
     QCard,
     QCardTitle,
     QCardMain,
     QCardActions,
     QCardMedia,
     QCardSeparator,
-    QSideLink,
+    QCollapsible,
+    QDataTable,
+    QField,
+    QIcon,
+    QInput,
+    QList,
+    QListHeader,
+    QItem,
+    QItemSide,
+    QItemMain,
+    QLayout,
+    QModal,
     QPopover,
     QSelect,
-    LocalStorage
+    QSideLink,
+    QSlider,
+    QToggle,
+    QToolbar,
+    QToolbarTitle
   } from 'quasar'
 
   // import { LocalStorage, Dialog } from 'quasar'
   import TfpData from '../TfpData.json'
-  import ModalTest from './ModalTest.vue'
   import DailySummary from './DailySummary.vue'
   import Transactions from './Transactions.vue'
   import DayStart from './DayStart.vue'
@@ -195,31 +167,38 @@
   export default {
     name: 'app',
     components: {
-      // DayStart
+      date,
       dom,
       event,
       openURL,
-      QLayout,
-      QToolbar,
-      QToolbarTitle,
+      LocalStorage,
       QBtn,
-      QIcon,
-      QList,
-      QListHeader,
-      QItem,
-      QItemSide,
-      QItemMain,
-      QModal,
       QCard,
       QCardTitle,
       QCardMain,
       QCardActions,
       QCardMedia,
       QCardSeparator,
-      QSideLink,
+      QCollapsible,
+      QDataTable,
+      QField,
+      QIcon,
+      QInput,
+      QList,
+      QListHeader,
+      QItem,
+      QItemSide,
+      QItemMain,
+      QLayout,
+      QModal,
       QPopover,
       QSelect,
-      ModalTest,
+      QSideLink,
+      QSlider,
+      QToggle,
+      QToolbar,
+      QToolbarTitle,
+
       DailySummary,
       Transactions,
       DayStart
@@ -227,11 +206,7 @@
 
     data () {
       return {
-        select: '',
-        selectOptions: [ { label: 'Google', value: 'goog' }, { label: 'Facebook', value: 'fb' } ],
-
         tfpData: tfpData,
-        // tfpData: LocalStorage.get.item('tfpData'),
 
         // settings
         taxRate: 0.05,
@@ -270,7 +245,8 @@
         newItems: [],
         newTransaction: {},
 
-        currentShow: { dateOfShow: '', market: '', teamName: '', totalSales: 0 },
+        currentShow: { dateOfShow: date.formatDate(Date.now(), 'YYYY-MM-DD'), market: 0, teamName: 0, totalSales: 0 },
+        currentShowId: 0,
 
         // transaction arrays
         config: {
@@ -360,7 +336,7 @@
     },
 
     events: {
-      onDaySaved: function (data) {
+      daySaved (data) {
         alert('in onDaySaved')
         this.$broadcast('onDayChanged', data)
       }
@@ -522,8 +498,10 @@
         let days = this.tfpData.dayInfo
         let newId = Math.max(...Object.keys(days)) + 1
         Object.assign(days, {[newId.toString()]: { id: newId, marketId: this.currentShow.market, showDate: this.currentShow.dateOfShow, teamId: this.currentShow.teamName }})
+        this.currentShowId = newId
         alert(JSON.stringify(this.currentShow))
-        this.onDaySaved(dayObj)
+        // this.$refs.dailySummary.daySaved()
+        // this.$broadcast('onDayChanged', dayObj)
       }
     }
   }

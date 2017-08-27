@@ -136,6 +136,7 @@
     "122": { "id": 122, "productTypeId": 10, "name": "small", "desc": "small", "img": "maps/maps-small.jpg", "price": 295 }
   },
   "markets": {
+    "0": { "id": 0, "name": "not set", "organization": "not set", "location": "not set"},
     "1": { "id": 1, "name": "Millarville Market", "organization": "", "location": "Millarville, AB" },
     "2": { "id": 2, "name": "Canmore Mountain Market", "organization": "", "location": "Canmore, AB" },
     "3": { "id": 3, "name": "Banff Market", "organization": "", "location": "Banff, AB" },
@@ -183,6 +184,7 @@
   },
 
   "teams": {
+    "0": { "id": 0, "name": "not set", "persions": []},
     "1": { "id": 1, "name": "Team Sean", "persons": [1, 5]},
     "2": { "id": 2, "name": "Team Tracy", "persons": [2, 3]}
   }

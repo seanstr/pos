@@ -8,28 +8,20 @@
       <q-card-main ref="show-summary">
         <q-field
           icon="today"
-          label="Date"
-          helper="Helper"
-          :error="invalidDate"
-          error-label="We need a valid date">
-          <q-datetime v-model="currentShow.dateOfShow" type="date" @input="tfpData.markets.dateOfShow" :placeholder="dateOfShow"></q-datetime>
+          label="Date">
+          <q-inline-datetime v-model="currentShow.dateOfShow" type="date" @input="tfpData.markets.dateOfShow" :placeholder="dateOfShow"></q-inline-datetime>
+          <!-- <q-datetime v-model="currentShow.dateOfShow" type="date" @input="tfpData.markets.dateOfShow" :placeholder="dateOfShow"></q-datetime> -->
         </q-field>
 
         <q-field
           icon="today"
-          label="Market"
-          helper="Helper"
-          :error="invalidMarket"
-          error-label="We need a valid market">
+          label="Market">
           <q-select v-model="currentShow.market" :options="locationOptions" placeholder="name of the market"></q-select>
         </q-field>
 
         <q-field
           icon="today"
-          label="Team"
-          helper="Helper"
-          :error="invalidTeam"
-          error-label="We need a valid team">
+          label="Team">
           <q-select v-model="currentShow.teamName" :options="teamOptions" placeholder="name of the team"></q-select>
         </q-field>
 
@@ -37,24 +29,26 @@
         <q-btn icon-right="cancel" @click="$refs.dayStart.close()" color="primary">Close</q-btn>
       </q-card-main>
     </q-card>
-  </q-modal>   
+  </q-modal>
 </template>
 <script>
   import {
+    date,
     QBtn,
     QCard,
     QCardTitle,
     QCardSeparator,
     QCardMain,
-    QField,
     QDatetime,
+    QField,
+    QInlineDatetime,
     QModal,
-    QSelect,
-    date
+    QSelect
   } from 'quasar'
 
   export default {
     components: {
+      date,
       QBtn,
       QCard,
       QCardTitle,
@@ -62,6 +56,7 @@
       QCardMain,
       QDatetime,
       QField,
+      QInlineDatetime,
       QModal,
       QSelect
     },
