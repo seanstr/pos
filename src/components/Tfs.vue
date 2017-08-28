@@ -493,15 +493,11 @@
       },
 
       daySaved: function (dayObj) {
-        alert('in daySaved')
         this.currentShow = dayObj
         let days = this.tfpData.dayInfo
         let newId = Math.max(...Object.keys(days)) + 1
         Object.assign(days, {[newId.toString()]: { id: newId, marketId: this.currentShow.market, showDate: this.currentShow.dateOfShow, teamId: this.currentShow.teamName }})
         this.currentShowId = newId
-        alert(JSON.stringify(this.currentShow))
-        // this.$refs.dailySummary.daySaved()
-        // this.$broadcast('onDayChanged', dayObj)
       }
     }
   }

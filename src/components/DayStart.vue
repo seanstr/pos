@@ -6,22 +6,16 @@
       </q-card-title>
       <q-card-separator />
       <q-card-main ref="show-summary">
-        <q-field
-          icon="today"
-          label="Date">
-          <q-inline-datetime v-model="currentShow.dateOfShow" type="date" @input="tfpData.markets.dateOfShow" :placeholder="dateOfShow"></q-inline-datetime>
+        <q-field label="Date">
+          <q-datetime v-model="currentShow.dateOfShow" type="date" @input="tfpData.markets.dateOfShow" default-selection="dateOfShow"></q-datetime>
           <!-- <q-datetime v-model="currentShow.dateOfShow" type="date" @input="tfpData.markets.dateOfShow" :placeholder="dateOfShow"></q-datetime> -->
         </q-field>
 
-        <q-field
-          icon="today"
-          label="Market">
+        <q-field label="Market">
           <q-select v-model="currentShow.market" :options="locationOptions" placeholder="name of the market"></q-select>
         </q-field>
 
-        <q-field
-          icon="today"
-          label="Team">
+        <q-field label="Team">
           <q-select v-model="currentShow.teamName" :options="teamOptions" placeholder="name of the team"></q-select>
         </q-field>
 

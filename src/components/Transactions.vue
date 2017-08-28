@@ -1,7 +1,7 @@
 <template>
   <div>
     <div v-if="page == 'transactions'" v-for="tx in tfpData.transactions" v-bind:currTx="tx" :key="tx.id" id="transactions">
-      <q-card class="row">
+      <q-card class="row" :class="transactionColor(tx)">
         <q-card inline class="col-3" flat>
           <q-card-main>
             <div class="row">
@@ -14,12 +14,12 @@
               <span class="col-4">Tx Total</span>
               <span class="col">{{tx.total}}</span>
             </div>
-            <div class="row">
+            <div v-if="tx.pp_or_pl == 'pl'" class="row">
               <span class="offset-3" />
               <span class="col-1">+</span>
               <span id="tx-tax" class="col">{{tx.tax}}</span>
             </div>
-            <div class="row">
+            <div v-if="tx.pp_or_pl == 'pl'" class="row">
               <span class="offset-3" />
               <span class="col-1">=</span>
               <span id="tx-total" class="col">{{tx.total + tx.tax}}</span>
@@ -34,12 +34,8 @@
           <q-card  class="row" v-for="item in selectedTransactionItems(tx)" v-bind:data="item" v-bind:key="item.productItemDesc">
             <q-card-main class="col-12">
               <div class="row">
-                <span class="col-2">Prd</span>
-                <span class="col-3">{{item.productTypeDesc}}</span>
-              </div>
-              <div class="row">
-                <span class="col-2">Description</span>
-                <span class="col-4">{{item.productItemDesc}}</span>
+                <span class="col-2">Product</span>
+                <span class="col-3">{{item.productTypeDesc}} - {{item.productItemDesc}}</span>
               </div>
               <div class="row">
                 <span class="col-2">Qty</span>
@@ -49,7 +45,7 @@
                 <span class="col-2">Price</span>
                 <span id="tx-total" class="col-2">{{item.price}}</span>
               </div>
-              <div class="row">
+              <div v-if="tx.pp_or_pl == 'pl'" class="row">
                 <span class="col-2">Tax</span>
                 <span id="tx-total" class="col-2">{{item.tax}}</span>
               </div>
@@ -88,6 +84,17 @@
 
     data () {
       return {
+      }
+    },
+
+    computed: {
+      transactionColor (tx) {
+        if (tx.pp_or_pl === 'pl') {
+          return 'blue'
+        }
+        else {
+          return 'green'
+        }
       }
     },
 
