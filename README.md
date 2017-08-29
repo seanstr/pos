@@ -1,10 +1,16 @@
-# Quasar App
+# Point Of Sale
 
 > A Quasar project
 
 ## Build Setup
 
 ``` bash
+# clone repository
+$ git clone https://github.com/seanstr/pos.git
+
+# change to pos folder
+$ cd pos
+
 # install dependencies
 $ npm install
 

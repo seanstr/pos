@@ -1,8 +1,8 @@
 <template>
   <div>
     <div v-if="page == 'transactions'" v-for="tx in tfpData.transactions" v-bind:currTx="tx" :key="tx.id" id="transactions">
-      <q-card class="row" :class="transactionColor(tx)">
-        <q-card inline class="col-3" flat>
+      <q-card class="row">
+        <q-card inline class="col-3" flat :color="transactionColor">
           <q-card-main>
             <div class="row">
               <span class="col-4">Tx#</span>
@@ -88,13 +88,9 @@
     },
 
     computed: {
-      transactionColor (tx) {
-        if (tx.pp_or_pl === 'pl') {
-          return 'blue'
-        }
-        else {
-          return 'green'
-        }
+      transactionColor () {
+        alert(JSON.stringify(this.tx))
+        return 'blue'
       }
     },
 
