@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="page == 'transactions'" v-for="tx in tfpData.transactions" v-bind:currTx="tx" :key="tx.id" id="transactions">
+    <div v-if="page == 'transactions'" v-for="tx in tfpData.transactions" :key="tx.id" id="transactions">
       <q-card class="row">
         <q-card inline class="col-3" flat :color="transactionColor">
           <q-card-main>
@@ -84,23 +84,28 @@
 
     data () {
       return {
+        currTx: 0
       }
     },
 
     computed: {
       transactionColor () {
-        alert(JSON.stringify(this.tx))
-        return 'blue'
+        // alert(JSON.stringify(this.currTx))
+        if (this.currTx.pp_or_pl === 'pl') return 'red'
+        return 'green'
       }
     },
 
     methods: {
       selectedTransactionItems (tx) {
+        this.currTx = tx
         if (this.tfpData.transactions === '') return null
         let _obj = this.tfpData.transactionItems
         let _filtered = {}
         Object.keys(_obj).forEach(function (key) {
-          if (_obj[key].transactionId === tx.id) _filtered[key] = _obj[key]
+          if (_obj[key].transactionId === tx.id) {
+            _filtered[key] = _obj[key]
+          }
         })
         // alert(JSON.stringify(_filtered, null, 4))
         return _filtered
