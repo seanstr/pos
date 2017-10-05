@@ -91,6 +91,7 @@
         </q-card-main>
         <q-card-separator />
         <q-card-main ref="finish-tx-data">
+          <q-toggle v-model="pp_or_pl" label="Type" />
           <q-field icon="today" label="Type">
             <q-input v-model="pp"  placeholder="Unit price" />
           </q-field>
@@ -393,7 +394,7 @@
         this.productType = productType
         this.selectedProductTypeImage = './statics/' + productType.img
         this.productTypeMessage = productType.name + ' selected'
-        this.$refs['chooseItem'].open()
+        this.$refs.chooseItem.open()
       },
 
       selectProduct: function (item) {
@@ -401,7 +402,7 @@
         this.price = item.price
         this.selectedItemImage = './statics/' + item.img
         this.itemMessage = this.product.desc + ' selected'
-        this.$refs['chooseQty'].open()
+        this.$refs.chooseQty.open()
       },
 
       selectPayType: function (val) {
@@ -481,7 +482,7 @@
 
       saveAndAddNew: function () {
         this.finish()
-        this.$refs['chooseProduct'].open()
+        this.$refs.chooseProduct.open()
       },
 
       transactionList: function () {
