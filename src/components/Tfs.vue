@@ -3,7 +3,7 @@
     <!-- Header -->
     <q-toolbar slot="header">
       <q-toolbar-title>
-        Tracy Fine Products
+        TFP
       </q-toolbar-title>
       <q-btn flat @click="$refs.layout.toggleRight()">
         <q-icon name="menu" />
@@ -37,7 +37,8 @@
         <div>
           <div class="row wrap">
             <div class="width-4of12 auto">
-              <button :id="'btn'+item.id" class="tx-img-button" @click="selectProductType(item)" v-for="item in tfpData.productTypes">
+              <button :id="'btn'+item.id" class="tx-img-button" @click="selectProductType(item)" 
+                  v-for="item in tfpData.productTypes" v-bind:key="item.name">
                 <img :src= "'./statics/'+item.img" :title="item.name" style="width: 128px" />
                 <br/>
                 <span class="label">{{item.name}}</span>
@@ -50,7 +51,8 @@
         <div>
           <div class="row wrap">
             <div class="width-1of12 auto">
-              <button :id="'btn'+item.id" class="tx-img-button" @click="selectProduct(item)" v-for="item in selectedProductTypeItems">
+              <button :id="'btn'+item.id" class="tx-img-button" @click="selectProduct(item)" 
+                  v-for="item in selectedProductTypeItems" v-bind:key="item.name">
                 <img :src= "'./statics/'+item.img" :alt="item.desc" style="width: 128px" />
                 <br/>
                 <span class="label auto wrap" style="font-size: 8pt;">{{item.desc}}</span>
@@ -91,10 +93,7 @@
         </q-card-main>
         <q-card-separator />
         <q-card-main ref="finish-tx-data">
-          <q-toggle v-model="pp_or_pl" label="Type" />
-          <q-field icon="today" label="Type">
-            <q-input v-model="pp"  placeholder="Unit price" />
-          </q-field>
+          Cash&nbsp;&nbsp;<q-toggle v-model="pp" label="Card" />
           <q-field icon="today" label="Tx Price">
             <q-input v-model="runningTotal"  placeholder="Total" />
           </q-field>
@@ -319,10 +318,6 @@
     },
 
     mounted: function () {
-      // alert('In mounted')
-
-      // alert(JSON.stringify(this.TfpData))
-
       if (typeof tpfData !== 'undefined') alert('tfpData defined')
 
       if (this.tpfData == null) {
@@ -331,9 +326,6 @@
       else {
         // alert('tfpData not null')
       }
-
-      // if (this.tpfData) alert('tfpData OK'); else alert('tfpData not OK')
-      // this.tfpData ? alert(this.tfpData) : alert('tfpData is null')
     },
 
     events: {
@@ -369,6 +361,7 @@
       },
 
       startNewTransaction: function () {
+        this.newItems = []
         this.page = 'new-transactions'
         let _txId = this.txId += 1
         this.newTransaction = {
@@ -422,6 +415,7 @@
           total: (this.price + (this.price * _tax)) * this.qty,
           runningTotal: this.runningTotal += (this.price + (this.price * _tax)) * this.qty
         })
+        this.$refs.chooseQty.close()
         this.calculateTransactionTotals()
         this.saveTransaction()
       },
@@ -462,7 +456,7 @@
         _tfpData.transactions[this.newTransaction.id] = this.newTransaction
 
         let _newTx = this.newTransaction
-        let _id = 3
+        let _id = this.txId
         this.newItems.forEach(function (item) {
           let _tmp = {
             id: _id++,
@@ -478,6 +472,9 @@
           _tfpData.transactionItems[_tmp.id] = _tmp
         })
         this.tfpData = _tfpData
+        alert(this.currentShow.totalSales)
+        alert(this.transactionTotal)
+        this.currentShow.totalSales += this.transactionTotal
       },
 
       saveAndAddNew: function () {

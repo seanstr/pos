@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <div v-if="page == 'transactions'" v-for="tx in tfpData.transactions" :key="tx.id" id="transactions">
+  <div v-if="page == 'transactions'">
+    <div v-for="tx in tfpData.transactions" :key="tx.id" id="transactions">
       <q-card class="row">
         <q-card inline class="col-3 text-dark" flat :color="transactionColor">
           <q-card-main>
