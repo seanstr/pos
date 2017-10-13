@@ -20,6 +20,16 @@
             <q-item @click="saveToLocalStorage()">
               <q-item-main label="Save Data" />
             </q-item>
+            <q-item @click="clearLocalStorageTransactions()">
+              <q-item-main label="Clear Data" />
+            </q-item>
+            <q-item @click="reloadTFPData()">
+              <q-item-main label="Reload Data from File" />
+            </q-item>
+            <q-item 
+              @click="$refs.basicModal.open()">
+              <q-item-main label="Display TFP Data" />
+            </q-item>
           </q-list>
       </q-list>
     </div>
@@ -93,7 +103,7 @@
         </q-card-main>
         <q-card-separator />
         <q-card-main ref="finish-tx-data">
-          Cash&nbsp;&nbsp;<q-toggle v-model="pp" label="Card" />
+          Card&nbsp;&nbsp;<q-toggle v-model="pp" label="Cash" @change="setTaxValues()" />
           <q-field icon="today" label="Tx Price">
             <q-input v-model="runningTotal"  placeholder="Total" />
           </q-field>
@@ -105,10 +115,17 @@
           </q-field>
         </q-card-main>
 
-        <q-btn icon-right="add" @click="startNewTransaction()" color="primary">Start New Transaction</q-btn>
+        <q-btn icon-right="add" @click="saveAndStartNew()" color="primary">Start New Transaction</q-btn>
         <q-btn icon-right="add" @click="transactionList()" color="primary">Back to Transaction List</q-btn>
       </q-card>
     </div>
+    <q-modal ref="basicModal">
+      <h4>Current Data View</h4>
+      <p>
+       {{JSON.stringify(tfpData)}}
+      </p>
+      <q-btn color="primary" @click="$refs.basicModal.close()">Close</q-btn>
+    </q-modal>
   </q-layout>
 </template>
 
@@ -147,22 +164,15 @@
     QToolbarTitle
   } from 'quasar'
 
-  // import { LocalStorage, Dialog } from 'quasar'
+  // load from JSON file
   import TfpData from '../TfpData.json'
+
+  // load from LocalStorage
+  let tfpData = LocalStorage.get.item('tfpData')
+  
   import DailySummary from './DailySummary.vue'
   import Transactions from './Transactions.vue'
   import DayStart from './DayStart.vue'
-
-  // import DayStart1 from './DayStart1.vue'
-
-  // if (LocalStorage.isEmpty()) {
-  // alert('loading tfpData from json')
-  LocalStorage.set('tfpData', TfpData)
-  // }
-
-  let tfpData = LocalStorage.get.item('tfpData')
-  // alert('tfpdata loaded')
-  // alert(JSON.stringify(tfpData))
 
   export default {
     name: 'app',
@@ -206,7 +216,8 @@
 
     data () {
       return {
-        tfpData: tfpData,
+        tfpData: tfpData, // use LocalStorage
+        tfpDataDisplayOpen: false,
 
         // settings
         taxRate: 0.05,
@@ -240,7 +251,8 @@
         product: '',
         currTx: {},
 
-        productTypes: TfpData,
+        // productTypes: TfpData,
+        productTypes: tfpData,
         txId: 1,
         newItems: [],
         newTransaction: {},
@@ -318,14 +330,18 @@
     },
 
     mounted: function () {
-      if (typeof tpfData !== 'undefined') alert('tfpData defined')
+      if (typeof tfpData !== 'undefined') alert('tfpData defined')
 
-      if (this.tpfData == null) {
-        // alert('tfpData null')
+      if (this.tfpData == null) {
+        alert('tfpData null')
+        this.tfpData = this.TpfData
+        alert(tfpData)
       }
       else {
-        // alert('tfpData not null')
+        alert('tfpData not null')
+        this.calculateTotal()
       }
+      this.txId = Math.max(...Object.keys(tfpData.transactions).map(k => tfpData.transactions[k]['id']))
     },
 
     events: {
@@ -360,7 +376,15 @@
         return _filtered
       },
 
-      startNewTransaction: function () {
+      calculateTotal () {
+        let _runningTotal = 0.0
+        for (let tx of Object.keys(this.tfpData.transactions)) {
+          _runningTotal += this.tfpData.transactions[tx].total + this.tfpData.transactions[tx].tax
+        }
+        this.currentShow.totalSales = _runningTotal
+      },
+
+      startNewTransaction () {
         this.newItems = []
         this.page = 'new-transactions'
         let _txId = this.txId += 1
@@ -377,12 +401,30 @@
         }
       },
 
-      saveToLocalStorage: function () {
-        LocalStorage.set('key', 'value')
+      saveToLocalStorage () {
         LocalStorage.set('tfpData', this.tfpData)
+        LocalStorage.set('transactions', this.tfpData.transactions)
+        LocalStorage.set('transactionItems', this.tfpData.transactionItems)
       },
 
-      selectProductType: function (productType) {
+      reloadTFPData () {
+        this.tfpData = TfpData
+      },
+
+      clearLocalStorageTransactions () {
+        this.tfpData.transactions = {}
+        this.tfpData.transactionItems = {}
+        this.txId = 0
+        LocalStorage.set('tfpData', this.tfpData)
+        LocalStorage.set('transactions', this.tfpData.transactions)
+        LocalStorage.set('transactionItems', this.tfpData.transactionItems)
+      },
+
+      displayTFPData () {
+        this.tfpDataDisplayOpen = tfpData
+      },
+
+      selectProductType (productType) {
         this.productTypeSelected = productType
         this.productType = productType
         this.selectedProductTypeImage = './statics/' + productType.img
@@ -390,7 +432,7 @@
         this.$refs.chooseItem.open()
       },
 
-      selectProduct: function (item) {
+      selectProduct (item) {
         this.product = item
         this.price = item.price
         this.selectedItemImage = './statics/' + item.img
@@ -398,11 +440,11 @@
         this.$refs.chooseQty.open()
       },
 
-      selectPayType: function (val) {
+      setTaxValues () {
         this.calculateTransactionTotals()
       },
 
-      finish: function () {
+      finish () {
         let _tax = this.pp ? 0 : this.taxRate
         this.newItems.push({
           productTypeId: this.productTypeSelected.id,
@@ -417,10 +459,9 @@
         })
         this.$refs.chooseQty.close()
         this.calculateTransactionTotals()
-        this.saveTransaction()
       },
 
-      calculateTransactionTotals: function () {
+      calculateTransactionTotals () {
         let tempArr = []
         let _runningTotal = 0
         let _runningTotalTax = 0
@@ -448,7 +489,7 @@
         // alert(JSON.stringify(this.newItems))
       },
 
-      saveTransaction: function () {
+      saveTransaction () {
         let _tfpData = this.tfpData
         this.newTransaction.pp_or_pl = this.pp ? 'pl' : 'pp'
         this.newTransaction.total = this.transactionTotal
@@ -474,23 +515,32 @@
         this.tfpData = _tfpData
         alert(this.currentShow.totalSales)
         alert(this.transactionTotal)
+        alert(JSON.stringify(this.tfpData.transactions))
+        alert(JSON.stringify(_tfpData.transactions))
         this.currentShow.totalSales += this.transactionTotal
       },
 
-      saveAndAddNew: function () {
+      saveAndAddNew () {
         this.finish()
         this.$refs.chooseProduct.open()
       },
 
-      transactionList: function () {
+      saveAndStartNew () {
+        this.saveTransaction()
+        this.startNewTransaction()
+        this.$refs.chooseProduct.open()
+      },
+
+      transactionList () {
+        this.saveTransaction()
         this.page = 'transactions'
       },
 
-      openDayStart: function () {
+      openDayStart () {
         this.$refs.dayStart.open()
       },
 
-      daySaved: function (dayObj) {
+      daySaved (dayObj) {
         this.currentShow = dayObj
         let days = this.tfpData.dayInfo
         let newId = Math.max(...Object.keys(days)) + 1
