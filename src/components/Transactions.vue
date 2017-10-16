@@ -30,7 +30,7 @@
           </q-card-main>
         </q-card>
 
-        <q-card inline class="col-8" flat>
+        <q-card inline class="col-7" flat>
           <q-card  class="row" v-for="item in selectedTransactionItems(tx)" v-bind:data="item" v-bind:key="item.productItemDesc">
             <q-card-main class="col-12">
               <div class="row">
@@ -55,6 +55,10 @@
             </q-card-main>
           </q-card>
         </q-card>
+        <q-card inline class="col-1" flat>
+          <q-btn icon="edit" color="primary" small style="width: 100%; margin-top: 10px;" @click="editTransaction(tx.id)">Edit</q-btn>
+          <q-btn icon="delete" color="primary" small style="width: 100%; margin-top: 10px;" @click="deleteTransaction(tx)">Delete</q-btn>
+        </q-card>
       </q-card>
     </div>
   </div>
@@ -62,6 +66,7 @@
 
 <script>
   import {
+    QBtn,
     QCard,
     QCardActions,
     QCardMain,
@@ -72,6 +77,7 @@
 
   export default {
     components: {
+      QBtn,
       QCard,
       QCardActions,
       QCardMain,
@@ -80,7 +86,7 @@
       QCardTitle
     },
 
-    props: ['page', 'tfpData'],
+    props: ['page', 'tfpData', 'currTransaction', 'currTransactionItems'],
 
     data () {
       return {
@@ -90,8 +96,8 @@
 
     computed: {
       transactionColor () {
-        if (this.currTx.pp_or_pl === 'pl') return 'blue-2'
-        return 'green-2'
+        // if (this.currTx.pp_or_pl === 'pl') return 'blue-2'
+        // return 'green-2'
       }
     },
 
@@ -107,6 +113,13 @@
           }
         })
         return _filtered
+      },
+
+      editTransaction (tx) {
+        this.currTransaction = tx
+        this.currTransactionItems = this.selectedTransactionItems(tx)
+        this.page = 'page'
+        return this.page
       }
     }
   }

@@ -59,7 +59,8 @@
 
     data () {
       return {
-        dateOfShow: date.formatDate(Date.now(), 'YYYY-MM-DD')
+        dateOfShow: date.formatDate(Date.now(), 'YYYY-MM-DD'),
+        newDayStart: {}
       }
     },
 
@@ -79,6 +80,17 @@
       },
 
       saveDayStart () {
+        let _id = Math.max(...Object.keys(this.tfpData.dayInfo).map(k => this.tfpData.dayInfo[k]['id']))
+
+        this.newDayStart = {
+          id: _id++,
+          marketId: this.currentShow.market,
+          showDate: this.currentShow.dateOfShow,
+          teamId: this.currentShow.teamName
+        }
+        alert(JSON.stringify(this.newDayStart))
+        this.tfpData.dayInfo[_id] = this.newDayStart
+
         this.$emit('day_saved', this.currentShow)
         this.$refs.dayStart.close()
       },

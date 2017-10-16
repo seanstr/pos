@@ -71,7 +71,7 @@
           </div>
         </div>
       </q-collapsible>
-      <q-collapsible id="chooseQty" icon="shopping_cart" label="Choose Quantity" group="tx" ref="chooseQty">
+      <q-collapsible id="chooseQty" icon="shopping_cart" :label="qtyMessage" group="tx" ref="chooseQty">
         <q-field
           icon="today"
           label="Quantity">
@@ -121,8 +121,10 @@
     </div>
     <q-modal ref="basicModal">
       <h4>Current Data View</h4>
+      <pre>
+       {{JSON.stringify(tfpData, null, 2)}}
+      </pre>
       <p>
-       {{JSON.stringify(tfpData)}}
       </p>
       <q-btn color="primary" @click="$refs.basicModal.close()">Close</q-btn>
     </q-modal>
@@ -228,6 +230,7 @@
         productTypeMessage: 'Select a Product',
         selectedItemImage: '',
         itemMessage: 'Select an Item',
+        qtyMessage: 'Choose Quantity',
 
         // item values
         qty: 1,
@@ -330,7 +333,7 @@
     },
 
     mounted: function () {
-      if (typeof tfpData !== 'undefined') alert('tfpData defined')
+      // if (typeof tfpData !== 'undefined') alert('tfpData defined')
 
       if (this.tfpData == null) {
         alert('tfpData null')
@@ -338,7 +341,7 @@
         alert(tfpData)
       }
       else {
-        alert('tfpData not null')
+        // alert('tfpData not null')
         this.calculateTotal()
       }
       this.txId = Math.max(...Object.keys(tfpData.transactions).map(k => tfpData.transactions[k]['id']))
@@ -445,6 +448,7 @@
       },
 
       finish () {
+        this.qtyMessage = this.qty + ' chosen'
         let _tax = this.pp ? 0 : this.taxRate
         this.newItems.push({
           productTypeId: this.productTypeSelected.id,
@@ -513,10 +517,10 @@
           _tfpData.transactionItems[_tmp.id] = _tmp
         })
         this.tfpData = _tfpData
-        alert(this.currentShow.totalSales)
-        alert(this.transactionTotal)
-        alert(JSON.stringify(this.tfpData.transactions))
-        alert(JSON.stringify(_tfpData.transactions))
+        // alert(this.currentShow.totalSales)
+        // alert(this.transactionTotal)
+        // alert(JSON.stringify(this.tfpData.transactions))
+        // alert(JSON.stringify(_tfpData.transactions))
         this.currentShow.totalSales += this.transactionTotal
       },
 
@@ -546,6 +550,13 @@
         let newId = Math.max(...Object.keys(days)) + 1
         Object.assign(days, {[newId.toString()]: { id: newId, marketId: this.currentShow.market, showDate: this.currentShow.dateOfShow, teamId: this.currentShow.teamName }})
         this.currentShowId = newId
+      },
+
+      loadTransactionIntoTable () {
+        // this.newTransaction = tfpData.transactions[editTxId]
+
+        // this.$refs.chooseQty.close()
+        // this.calculateTransactionTotals()
       }
     }
   }
