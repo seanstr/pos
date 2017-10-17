@@ -42,7 +42,7 @@
 
     <transactions ref="transactions" :page="page" :tfpData="tfpData" v-on:editTransaction="editTransaction"></transactions>
 
-    <newTransaction ref="newTransaction" :txId="txId" :tfpData="tfpData" :showId="currentShowId" v-on:transactionSaved="transactionSaved"></newTransaction>
+    <newTransaction ref="newTransaction" :txId="txId" :txEdit="txEdit" :tfpData="tfpData" :showId="currentShowId" v-on:transactionSaved="transactionSaved"></newTransaction>
 
     <q-modal ref="basicModal">
       <h4>Current Data View</h4>
@@ -158,6 +158,7 @@
         txId: 1,
         newItems: [],
         newTransaction: {},
+        txEdit: false,
 
         currentShow: { dateOfShow: date.formatDate(Date.now(), 'YYYY-MM-DD'), market: 0, teamName: 0, totalSales: 0 },
         currentShowId: 0
@@ -165,18 +166,16 @@
     },
 
     mounted: function () {
-      // if (typeof tfpData !== 'undefined') alert('tfpData defined')
-
       if (this.tfpData == null) {
         alert('tfpData null')
         this.tfpData = this.TpfData
         alert(tfpData)
       }
       else {
-        // alert('tfpData not null')
         this.calculateTotal()
       }
-      this.txId = Math.max(...Object.keys(tfpData.transactions).map(k => tfpData.transactions[k]['id'])) + 1
+      this.txId = Math.max(...Object.keys(tfpData.transactions).map(k => tfpData.transactions[k]['id']))
+      if (this.txId === Number.POSITIVE_INFINITY || this.txId === Number.NEGATIVE_INFINITY) this.txId = 0
     },
 
     methods: {
@@ -193,7 +192,10 @@
 
       startNewTransaction () {
         this.page = 'new-transactions'
-        this.$refs.newTransaction.startNewTransaction()
+        this.txId++
+        this.$nextTick(function () {
+          this.$refs.newTransaction.startNewTransaction()
+        })
       },
 
       calculateTotal () {
@@ -240,15 +242,21 @@
       },
 
       editTransaction (data) {
-        this.newTransaction = data[0]
-        this.newItems = [data[1]]
-        this.page = data[2]
+        // this.newTransaction = data[0]
+        // this.newItems = [data[1]]
+        this.page = 'new-transactions'
+        this.txId = data[0]
+        this.txEdit = true
+        this.$nextTick(function () {
+          this.$refs.newTransaction.startNewTransaction()
+        })
       },
 
       transactionSaved (data) {
-        alert(JSON.stringify(data))
-        // this.tx, this.newTxId, this.transactionTotal, 'transactions'
-        this.page = data[3]
+        // this.newTransaction, this.newItems, 'transactions'
+        this.txId = data[0].id
+        this.page = data[2]
+        this.calculateTotal()
       }
     }
   }

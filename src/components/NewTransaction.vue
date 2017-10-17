@@ -138,7 +138,7 @@
       QToolbarTitle
     },
 
-    props: ['tfpData', 'showId', 'txId'],
+    props: ['tfpData', 'showId', 'txId', 'txEdit'],
 
     data () {
       return {
@@ -267,13 +267,12 @@
 
     methods: {
       startNewTransaction () {
-        alert('in startNewTransactions')
         this.currPage = 'new-transactions'
         this.newItems = []
-        this._txId = this.txId + 1
+        this._txId = this.txId
         this.newTransaction = {
-          id: this.txId,
-          txNumber: this.txId,
+          id: this._txId,
+          txNumber: this._txId,
           txTime: Date.now(),
           dayInfoId: 1,
           user: 1,
@@ -282,7 +281,6 @@
           total: 0,
           tax: 0
         }
-        alert(JSON.stringify(this.newTransaction))
       },
 
       selectProductType (productType) {
@@ -351,14 +349,14 @@
       },
 
       saveTransaction () {
-        alert('in saveTransaction')
         let _tfpData = this.tfpData
-        this.newTransaction.pp_or_pl = this.pp ? 'pl' : 'pp'
+        this.newTransaction.pp_or_pl = this.pp ? 'pp' : 'pl'
         this.newTransaction.total = this.transactionTotal
         this.newTransaction.tax = this.transactionTax
         _tfpData.transactions[this.newTransaction.id] = this.newTransaction
+
         let _id = Math.max(...Object.keys(_tfpData.transactionItems).map(k => _tfpData.transactionItems[k]['id'])) + 1
-        alert('calling forEach')
+        if (_id === Number.POSITIVE_INFINITY || _id === Number.NEGATIVE_INFINITY) _id = 0
         let _txId = this.newTransaction.id
         this.newItems.forEach(function (item) {
           _tfpData.transactionItems[_id] = {
@@ -383,16 +381,17 @@
 
       saveAndStartNew () {
         this.saveTransaction()
+        this.txId++
         this.startNewTransaction()
         this.$refs.chooseProduct.open()
       },
 
       transactionList () {
+        this.saveTransaction()
         this.currPage = 'transactions'
         // have to deal with asynchronousity so that the transactions section hides
         this.$nextTick(function () {
-          this.saveTransaction()
-          this.$emit('transactionSaved', [this.tx, this.newTxId, this.transactionTotal, this.currPage])
+          this.$emit('transactionSaved', [this.newTransaction, this.newItems, this.currPage])
         })
       },
 
