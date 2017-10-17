@@ -63,7 +63,6 @@
     "63": { "id": 63, "productTypeId": 4, "name": "new color", "desc": "New Color", "img": "icecreamscoops/icecreamscoop.png", "price": 50 },
     "78": { "id": 78, "productTypeId": 5, "name": "light wood", "desc": "Light Wood", "img": "seamrippers/seamripper.png", "price": 35 },
     "79": { "id": 79, "productTypeId": 5, "name": "dark wood", "desc": "Dark Wood", "img": "seamrippers/seamripper.png", "price": 35 },
-    "62": { "id": 62, "productTypeId": 4, "name": "color", "desc": "Color", "img": "icecreamscoops/icecreamscoop.png", "price":3550 },
     "80": { "id": 80, "productTypeId": 5, "name": "new color", "desc": "New Color", "img": "seamrippers/seamripper.png", "price": 45 },
     "81": { "id": 81, "productTypeId": 5, "name": "cherry", "desc": "cherry", "img": "seamrippers/seamripper.png", "price": 45 },
     "82": { "id": 82, "productTypeId": 5, "name": "elm", "desc": "elm", "img": "seamrippers/seamripper.png", "price": 45 },

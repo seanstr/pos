@@ -56,7 +56,7 @@
           </q-card>
         </q-card>
         <q-card inline class="col-1" flat>
-          <q-btn icon="edit" color="primary" small style="width: 100%; margin-top: 10px;" @click="editTransaction(tx.id)">Edit</q-btn>
+          <q-btn icon="edit" color="primary" small style="width: 100%; margin-top: 10px;" @click="editTransaction(tx)">Edit</q-btn>
           <q-btn icon="delete" color="primary" small style="width: 100%; margin-top: 10px;" @click="deleteTransaction(tx)">Delete</q-btn>
         </q-card>
       </q-card>
@@ -86,7 +86,7 @@
       QCardTitle
     },
 
-    props: ['page', 'tfpData', 'currTransaction', 'currTransactionItems'],
+    props: ['page', 'tfpData'],
 
     data () {
       return {
@@ -96,8 +96,8 @@
 
     computed: {
       transactionColor () {
-        // if (this.currTx.pp_or_pl === 'pl') return 'blue-2'
-        // return 'green-2'
+        if (this.currTx.pp_or_pl === 'pl') return 'blue-2'
+        return 'green-2'
       }
     },
 
@@ -116,10 +116,7 @@
       },
 
       editTransaction (tx) {
-        this.currTransaction = tx
-        this.currTransactionItems = this.selectedTransactionItems(tx)
-        this.page = 'page'
-        return this.page
+        this.$emit('editTransaction', [tx, this.selectedTransactionItems(tx), 'new-transactions'])
       }
     }
   }

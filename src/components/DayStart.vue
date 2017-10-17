@@ -88,10 +88,9 @@
           showDate: this.currentShow.dateOfShow,
           teamId: this.currentShow.teamName
         }
-        alert(JSON.stringify(this.newDayStart))
         this.tfpData.dayInfo[_id] = this.newDayStart
 
-        this.$emit('day_saved', this.currentShow)
+        this.$emit('daySaved', this.currentShow)
         this.$refs.dayStart.close()
       },
 

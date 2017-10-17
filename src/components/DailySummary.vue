@@ -21,14 +21,16 @@
       QCard,
       QCardMain
     },
+
     props: ['currentShow', 'tfpData', 'currentShowId'],
+
     data () {
       return {
         // currentShow: { dateOfShow: '', market: '', teamName: '', totalSales: '0' }
       }
     },
-    computed:
-    {
+
+    computed: {
       formattedDateOfShow () {
         if (this.currentShow.dateOfShow) return date.formatDate(this.currentShow.dateOfShow, 'YYYY-MM-DD')
       },
