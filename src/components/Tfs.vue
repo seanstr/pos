@@ -34,13 +34,14 @@
       </q-list>
     </div>
 
-    <q-btn icon-right="add" @click="startNewTransaction()" color="primary" class="full-width">Start New Transaction</q-btn>
+    <q-btn v-if="page == 'transactions'" icon-right="add" @click="startNewTransaction()" color="primary" class="full-width">Start New Transaction</q-btn>
+    <q-btn v-if="page == 'new-transactions'" icon-left="navigate_before" @click="page = 'transactions'" color="primary" class="full-width">Back to Transaction List</q-btn>
 
     <day-start ref="dayStart" class="full-width" :currentShow="currentShow" :tfpData="tfpData" v-on:daySaved="daySaved"></day-start>
 
     <daily-summary ref="dailySummary" :currentShow="currentShow" :tfpData="tfpData" :currentShowID="currentShowId"></daily-summary>
 
-    <transactions ref="transactions" :page="page" :tfpData="tfpData" v-on:editTransaction="editTransaction"></transactions>
+    <transactions ref="transactions" :page="page" :tfpData="tfpData" v-on:editTransaction="editTransaction" v-on:deleteTransaction="deleteTransaction"></transactions>
 
     <newTransaction ref="newTransaction" :txId="txId" :txEdit="txEdit" :tfpData="tfpData" :showId="currentShowId" v-on:transactionSaved="transactionSaved"></newTransaction>
 
@@ -250,6 +251,35 @@
         this.$nextTick(function () {
           this.$refs.newTransaction.startNewTransaction()
         })
+      },
+
+      deleteTransaction (data) {
+        this.page = 'transactions'
+        alert(JSON.stringify(data))
+        alert(JSON.stringify(this.tfpData.transactions))
+        alert(JSON.stringify(this.tfpData.transactionItems))
+
+        const filteredItems = Object.keys(this.tfpData.transactionItems)
+          .reduce((obj, key) => {
+            alert(this.tfpData.transactionItems[key].transactionId + ' ' + data[0].id)
+            if (this.tfpData.transactionItems[key].transactionId !== data[0].id) obj[key] = this.tfpData.transactionItems[key]
+            return obj
+          }, {})
+
+        alert(JSON.stringify(filteredItems))
+        this.tfpData.transactionItems = filteredItems
+        alert(JSON.stringify(this.tfpData.transactionItems))
+
+        const filtered = Object.keys(this.tfpData.transactions)
+          .reduce((obj, key) => {
+            alert(this.tfpData.transactions[key].id + ' ' + data[0].id)
+            if (this.tfpData.transactions[key].id !== data[0].id) obj[key] = this.tfpData.transactions[key]
+            return obj
+          }, {})
+
+        this.tfpData.transactions = filtered
+        // delete this.transactions[data[0].id]
+        alert(JSON.stringify(this.tfpData.transactions))
       },
 
       transactionSaved (data) {

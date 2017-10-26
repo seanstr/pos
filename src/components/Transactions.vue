@@ -1,8 +1,8 @@
 <template>
   <div v-if="page == 'transactions'">
     <div v-for="tx in tfpData.transactions" :key="tx.id" id="transactions">
-      <q-card class="row">
-        <q-card inline class="col-3 text-dark" flat :color="transactionColor">
+      <q-card class="row" :color="transactionColor(tx)">
+        <q-card inline class="col-3 text-dark" flat>
           <q-card-main>
             <div class="row">
               <span class="col-4 text-bold">Tx#</span>
@@ -30,24 +30,24 @@
           </q-card-main>
         </q-card>
 
-        <q-card inline class="col-7" flat>
-          <q-card  class="row" v-for="item in selectedTransactionItems(tx)" v-bind:data="item" v-bind:key="item.productItemDesc">
+        <q-card inline class="col-7" flat color="light">
+          <q-card  class="row" v-for="item in selectedTransactionItems(tx)" v-bind:data="item" v-bind:key="item.productItemDesc" flat color="light">
             <q-card-main class="col-12">
               <div class="row">
-                <span class="col-2 text-bold">Product</span>
-                <span class="col-10">{{item.productTypeDesc}} - {{item.productItemDesc}}</span>
+                <span class="col-2 text-bold text-black">Product</span>
+                <span class="col-10 text-black">{{item.productTypeDesc}} - {{item.productItemDesc}}</span>
               </div>
               <div class="row">
-                <span class="col-2 text-bold">Qty</span>
-                <span class="col-10">{{item.qty}}</span>
+                <span class="col-2 text-bold text-black">Qty</span>
+                <span class="col-10 text-black">{{item.qty}}</span>
               </div>
               <div class="row">
-                <span class="col-2 text-bold">Price</span>
-                <span id="tx-total" class="col-10">{{item.price}}</span>
+                <span class="col-2 text-bold text-black">Price</span>
+                <span id="tx-total" class="col-10 text-black">{{item.price}}</span>
               </div>
               <div v-if="tx.pp_or_pl == 'pl'" class="row">
-                <span class="col-2 text-bold">Tax</span>
-                <span id="tx-total" class="col-10">{{item.tax}}</span>
+                <span class="col-2 text-bold text-black">Tax</span>
+                <span id="tx-total" class="col-10 text-black">{{item.tax}}</span>
               </div>
               <div class="row">
                 <q-card-separator />
@@ -95,13 +95,14 @@
     },
 
     computed: {
-      transactionColor () {
-        if (this.currTx.pp_or_pl === 'pl') return 'blue-2'
-        return 'green-2'
-      }
     },
 
     methods: {
+      transactionColor (tx) {
+        if (tx.pp_or_pl === 'pl') return 'blue-2'
+        return 'green-2'
+      },
+
       selectedTransactionItems (tx) {
         this.currTx = tx
         if (this.tfpData.transactions === '') return null
@@ -117,6 +118,10 @@
 
       editTransaction (tx) {
         this.$emit('editTransaction', [tx, this.selectedTransactionItems(tx), 'new-transactions'])
+      },
+
+      deleteTransaction (tx) {
+        this.$emit('deleteTransaction', [tx])
       }
     }
   }
