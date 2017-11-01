@@ -21,7 +21,10 @@
               <q-item-main label="Save Data" />
             </q-item>
             <q-item @click="clearLocalStorageTransactions()">
-              <q-item-main label="Clear Data" />
+              <q-item-main label="Clear Transaction Data" />
+            </q-item>
+            <q-item @click="clearLocalStorageDayInfo()">
+              <q-item-main label="Clear DayInfo Data" />
             </q-item>
             <q-item @click="reloadTFPData()">
               <q-item-main label="Reload Data from File" />
@@ -37,7 +40,7 @@
     <q-btn v-if="page == 'transactions'" icon-right="add" @click="startNewTransaction()" color="primary" class="full-width">Start New Transaction</q-btn>
     <q-btn v-if="page == 'new-transactions'" icon-left="navigate_before" @click="page = 'transactions'" color="primary" class="full-width">Back to Transaction List</q-btn>
 
-    <day-start ref="dayStart" class="full-width" :currentShow="currentShow" :tfpData="tfpData" v-on:daySaved="daySaved"></day-start>
+    <day-start ref="dayStart" class="full-width" :currentShowId="currentShowId" :currentShow="currentShow" :tfpData="tfpData" v-on:daySaved="daySaved"></day-start>
 
     <daily-summary ref="dailySummary" :currentShow="currentShow" :tfpData="tfpData" :currentShowID="currentShowId"></daily-summary>
 
@@ -156,12 +159,12 @@
 
         // productTypes: TfpData,
         productTypes: tfpData,
-        txId: 1,
+        txId: 0,
         newItems: [],
         newTransaction: {},
         txEdit: false,
 
-        currentShow: { dateOfShow: date.formatDate(Date.now(), 'YYYY-MM-DD'), market: 0, teamName: 0, totalSales: 0 },
+        currentShow: { dateOfShow: date.formatDate(Date.now(), 'YYYY-MM-DD'), market: 0, teamName: 0, totalPpSales: 0, totalPlSales: 0, totalSales: 0 },
         currentShowId: 0
       }
     },
@@ -177,6 +180,9 @@
       }
       this.txId = Math.max(...Object.keys(tfpData.transactions).map(k => tfpData.transactions[k]['id']))
       if (this.txId === Number.POSITIVE_INFINITY || this.txId === Number.NEGATIVE_INFINITY) this.txId = 0
+      alert('TFS mounted: ' + this.txId)
+      this.currentShowId = Math.max(...Object.keys(tfpData.dayInfo).map(k => tfpData.dayInfo[k]['id']))
+      if (this.currentShowId === Number.POSITIVE_INFINITY || this.currentShowId === Number.NEGATIVE_INFINITY) this.currentShowId = 0
     },
 
     methods: {
@@ -193,17 +199,23 @@
 
       startNewTransaction () {
         this.page = 'new-transactions'
-        this.txId++
         this.$nextTick(function () {
-          this.$refs.newTransaction.startNewTransaction()
+          this.txId++
+          this.$refs.newTransaction.startNewTransaction(this.txId)
         })
       },
 
       calculateTotal () {
-        let _runningTotal = 0.0
-        for (let tx of Object.keys(this.tfpData.transactions)) {
-          _runningTotal += this.tfpData.transactions[tx].total + this.tfpData.transactions[tx].tax
+        let _runningPpTotal = 0.0, _runningPlTotal = 0.0, _runningTotal = 0.0
+        let _transactions = this.tfpData.transactions
+        for (let tx of Object.keys(_transactions)) {
+          let itemTotal = _transactions[tx].total + _transactions[tx].tax
+          if (_transactions[tx].pp_or_pl === 'pl') _runningPlTotal += itemTotal
+          if (_transactions[tx].pp_or_pl === 'pp') _runningPpTotal += itemTotal
+          _runningTotal += itemTotal
         }
+        this.currentShow.totalPlSales = _runningPlTotal
+        this.currentShow.totalPpSales = _runningPpTotal
         this.currentShow.totalSales = _runningTotal
       },
 
@@ -224,6 +236,16 @@
         LocalStorage.set('tfpData', this.tfpData)
         LocalStorage.set('transactions', this.tfpData.transactions)
         LocalStorage.set('transactionItems', this.tfpData.transactionItems)
+      },
+
+      clearLocalStorageDayInfo () {
+        this.tfpData.dayInfo = {}
+        this.tfpData.dayInfoPersons = {}
+        this.tfpData.dayInfoTeams = {}
+        this.dayInfoId = 0
+        LocalStorage.set('tfpData', this.tfpData)
+        LocalStorage.set('dayInfo', this.tfpData.dayInfo)
+        LocalStorage.set('dayInfoPersons', this.tfpData.dayInfoPersons)
       },
 
       displayTFPData () {
@@ -251,39 +273,31 @@
         this.$nextTick(function () {
           this.$refs.newTransaction.startNewTransaction()
         })
+        this.calculateTotal()
       },
 
       deleteTransaction (data) {
         this.page = 'transactions'
-        alert(JSON.stringify(data))
-        alert(JSON.stringify(this.tfpData.transactions))
-        alert(JSON.stringify(this.tfpData.transactionItems))
-
         const filteredItems = Object.keys(this.tfpData.transactionItems)
           .reduce((obj, key) => {
-            alert(this.tfpData.transactionItems[key].transactionId + ' ' + data[0].id)
             if (this.tfpData.transactionItems[key].transactionId !== data[0].id) obj[key] = this.tfpData.transactionItems[key]
             return obj
           }, {})
 
-        alert(JSON.stringify(filteredItems))
         this.tfpData.transactionItems = filteredItems
-        alert(JSON.stringify(this.tfpData.transactionItems))
-
         const filtered = Object.keys(this.tfpData.transactions)
           .reduce((obj, key) => {
-            alert(this.tfpData.transactions[key].id + ' ' + data[0].id)
             if (this.tfpData.transactions[key].id !== data[0].id) obj[key] = this.tfpData.transactions[key]
             return obj
           }, {})
-
         this.tfpData.transactions = filtered
-        // delete this.transactions[data[0].id]
-        alert(JSON.stringify(this.tfpData.transactions))
+        this.calculateTotal()
       },
 
       transactionSaved (data) {
         // this.newTransaction, this.newItems, 'transactions'
+        alert('in transactionSaved')
+        alert(JSON.stringify(data[0]))
         this.txId = data[0].id
         this.page = data[2]
         this.calculateTotal()

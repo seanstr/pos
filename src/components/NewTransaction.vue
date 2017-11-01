@@ -1,6 +1,6 @@
 <template>
   <div id="stepper-section" class="list" style="overflow: scroll;" v-if="currPage == 'new-transactions'">
-    <q-collapsible id="chooseProduct" opened icon="explore" :img="selectedProductTypeImage" :label="productTypeMessage" group="tx" ref="chooseProduct">
+    <q-collapsible id="chooseProduct" opened icon="explore" :image="selectedProductTypeImage" :label="productTypeMessage" group="tx" ref="chooseProduct">
       <div>
         <div class="row wrap">
           <div class="width-4of12 auto">
@@ -14,7 +14,7 @@
         </div>
       </div>
     </q-collapsible>
-    <q-collapsible id="chooseItem" icon="perm_identity" :img="selectedItemImage" :label="itemMessage" group="tx" ref="chooseItem">
+    <q-collapsible id="chooseItem" icon="perm_identity" :image="selectedItemImage" :label="itemMessage" group="tx" ref="chooseItem">
       <div>
         <div class="row wrap">
           <div class="width-1of12 auto">
@@ -32,16 +32,24 @@
       <q-field
         icon="today"
         label="Quantity">
-        <q-slider v-model="qty" :min="1" :max="50" label-always/>
+        <div class="row">
+          <div class="col-6 row">
+            <q-btn round small color="secondary" icon="remove" class="col-2" />
+            <span class="col-1" />
+            <q-input v-model="qty" :min="1" :max="100" type="number"  class="col-2 text-center" />
+            <span class="col-1" />
+            <q-btn round small color="secondary" icon="add" class="col-2" />
+          </div>
+        </div>
       </q-field>
       <q-field icon="today" label="Price">
-        <q-input v-model="price"  placeholder="Unit price" />
+        <q-input v-model="price" prefix="$Cdn" placeholder="Unit price" />
       </q-field>
       <q-btn icon-right="add" @click="finish()" color="primary">Finish and Pay</q-btn>
       <q-btn icon-right="add" @click="saveAndAddNew()" color="primary">Add Another Item</q-btn>
     </q-collapsible>
 
-    <q-card>
+    <q-card v-if="currPage == 'new-transactions'">
       <q-card-title>
         Finish Tx
       </q-card-title>
@@ -92,12 +100,13 @@
     QField,
     QIcon,
     QInput,
-    QList,
-    QListHeader,
     QItem,
     QItemSide,
     QItemMain,
+    QKnob,
     QLayout,
+    QList,
+    QListHeader,
     QModal,
     QPopover,
     QSelect,
@@ -122,12 +131,13 @@
       QField,
       QIcon,
       QInput,
-      QList,
-      QListHeader,
       QItem,
       QItemSide,
       QItemMain,
+      QKnob,
       QLayout,
+      QList,
+      QListHeader,
       QModal,
       QPopover,
       QSelect,
@@ -142,7 +152,7 @@
 
     data () {
       return {
-        currTx: 0,
+        currTx: this.txId,
         currPage: '',
 
         // settings
@@ -266,10 +276,13 @@
     },
 
     methods: {
-      startNewTransaction () {
+      startNewTransaction (_txId) {
+        alert('_txId = ' + _txId)
+        this.currTx = _txId
+        alert('NewTransaction startNewTransaction: ' + this.currTx)
         this.currPage = 'new-transactions'
         this.newItems = []
-        this._txId = this.txId
+        this._txId = this.currTx
         this.newTransaction = {
           id: this._txId,
           txNumber: this._txId,
@@ -287,6 +300,7 @@
         this.productTypeSelected = productType
         this.productType = productType
         this.selectedProductTypeImage = './statics/' + productType.img
+        alert(this.selectedProductTypeImage)
         this.productTypeMessage = productType.name + ' selected'
         this.$refs.chooseItem.open()
       },
@@ -381,8 +395,7 @@
 
       saveAndStartNew () {
         this.saveTransaction()
-        this.txId++
-        this.startNewTransaction()
+        this.startNewTransaction(this.currTx++)
         this.$refs.chooseProduct.open()
       },
 
