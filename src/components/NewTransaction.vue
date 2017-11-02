@@ -1,30 +1,26 @@
 <template>
   <div id="stepper-section" class="list" style="overflow: scroll;" v-if="currPage == 'new-transactions'">
     <q-collapsible id="chooseProduct" opened icon="explore" :image="selectedProductTypeImage" :label="productTypeMessage" group="tx" ref="chooseProduct">
-      <div>
-        <div class="row wrap">
-          <div class="width-4of12 auto">
-            <button :id="'btn'+item.id" class="tx-img-button" @click="selectProductType(item)" 
-                v-for="item in tfpData.productTypes" v-bind:key="item.name">
-              <img :src= "'./statics/'+item.img" :title="item.name" style="width: 128px" />
-              <br/>
-              <span class="label">{{item.name}}</span>
-            </button>
-          </div>
+      <div class="row wrap">
+        <div class="width-4of12 auto">
+          <button :id="'btn'+item.id" class="tx-img-button" @click="selectProductType(item)" 
+              v-for="item in tfpData.productTypes" v-bind:key="item.name">
+            <img :src= "'./statics/'+item.img" :title="item.name" style="width: 128px" />
+            <br/>
+            <span class="label">{{item.name}}</span>
+          </button>
         </div>
       </div>
     </q-collapsible>
     <q-collapsible id="chooseItem" icon="perm_identity" :image="selectedItemImage" :label="itemMessage" group="tx" ref="chooseItem">
-      <div>
-        <div class="row wrap">
-          <div class="width-1of12 auto">
-            <button :id="'btn'+item.id" class="tx-img-button" @click="selectProduct(item)" 
-                v-for="item in selectedProductTypeItems" v-bind:key="item.name">
-              <img :src= "'./statics/'+item.img" :alt="item.desc" style="width: 128px" />
-              <br/>
-              <span class="label auto wrap" style="font-size: 8pt;">{{item.desc}}</span>
-            </button>
-          </div>
+      <div class="row wrap">
+        <div class="width-1of12 auto">
+          <button :id="'btn'+item.id" class="tx-img-button" @click="selectProduct(item)" 
+              v-for="item in selectedProductTypeItems" v-bind:key="item.name">
+            <img :src= "'./statics/'+item.img" :alt="item.desc" style="width: 128px" />
+            <br/>
+            <span class="label auto wrap" style="font-size: 8pt;">{{item.desc}}</span>
+          </button>
         </div>
       </div>
     </q-collapsible>
@@ -49,40 +45,42 @@
       <q-btn icon-right="add" @click="saveAndAddNew()" color="primary">Add Another Item</q-btn>
     </q-collapsible>
 
-    <q-card v-if="currPage == 'new-transactions'">
-      <q-card-title>
-        Finish Tx
-      </q-card-title>
-      <q-card-separator />
-      <q-card-main ref="finish-tx-table">
-        <q-data-table class="width-1of1 auto" style="border: none;" :data="newItems" :config="config" :columns="columns">
-          <template slot="selection" scope="selection">
-            <button class="primary clear" @click="changeMessage(selection)">
-              <i>edit</i>
-            </button>
-            <button class="primary clear" @click="deleteRow(selection)">
-              <i>delete</i>
-            </button>
-          </template>
-        </q-data-table>
-      </q-card-main>
-      <q-card-separator />
-      <q-card-main ref="finish-tx-data">
-        Card&nbsp;&nbsp;<q-toggle v-model="pp" label="Cash" @change="setTaxValues()" />
-        <q-field icon="today" label="Tx Price">
-          <q-input v-model="runningTotal"  placeholder="Total" />
-        </q-field>
-        <q-field icon="today" label="+">
-          <q-input v-model="transactionTax"  placeholder="Tax" />
-        </q-field>
-        <q-field icon="today" label="=">
-          <q-input v-model="transactionTotal"  placeholder="Pay" />
-        </q-field>
-      </q-card-main>
+    <q-card-separator />
 
-      <q-btn icon-right="add" @click="saveAndStartNew()" color="primary">Start New Transaction</q-btn>
-      <q-btn icon-right="add" @click="transactionList()" color="primary">Back to Transaction List</q-btn>
-    </q-card>
+    <q-card-main class="bg-light" ref="finish-tx-table">
+      <q-card-title>Transaction Items</q-card-title>
+      <q-data-table class="width-1of1 auto" style="border: none;" :data="newItems" :config="config" :columns="columns">
+        <template slot="selection" scope="selection">
+          <button class="primary clear" @click="changeMessage(selection)">
+            <i>edit</i>
+          </button>
+          <button class="primary clear" @click="deleteRow(selection)">
+            <i>delete</i>
+          </button>
+        </template>
+      </q-data-table>
+    </q-card-main>
+    <q-card-separator />
+
+    <q-collapsible id="finish" icon="shopping_cart" label="Complete the transaction" group="tx" ref="finish" closed>
+      <q-card v-if="currPage == 'new-transactions'">
+        <q-card-main ref="finish-tx-data">
+          Card&nbsp;&nbsp;<q-toggle v-model="pp" label="Cash" @change="setTaxValues()" />
+          <q-field icon="today" label="Tx Price">
+            <q-input v-model="runningTotal"  placeholder="Total" />
+          </q-field>
+          <q-field icon="today" label="+">
+            <q-input v-model="transactionTax"  placeholder="Tax" />
+          </q-field>
+          <q-field icon="today" label="=">
+            <q-input v-model="transactionTotal"  placeholder="Pay" />
+          </q-field>
+        </q-card-main>
+
+        <q-btn icon-right="add" @click="saveAndStartNew()" color="primary">Start New Transaction</q-btn>
+        <q-btn icon-right="add" @click="transactionList()" color="primary">Back to Transaction List</q-btn>
+      </q-card>
+    </q-collapsible>
   </div>
 </template>
 
@@ -196,8 +194,7 @@
         // transaction arrays
         config: {
           rowHeight: '25px', // [REQUIRED] Set the row height
-          title: 'Transaction Items',
-          noHeader: false,
+          noHeader: true,
           refresh: true,
           columnPicker: false,
           leftStickyColumns: 0,
@@ -207,7 +204,7 @@
           },
           selection: 'single',
           messages: {
-            noData: '<i>warning</i> No data available to show.',
+            noData: '---',
             noDataAfterFiltering: '<i>warning</i> No results. Please refine your search terms.'
           },
 
@@ -333,6 +330,7 @@
         })
         this.$refs.chooseQty.close()
         this.calculateTransactionTotals()
+        this.$refs.finish.open()
       },
 
       calculateTransactionTotals () {
