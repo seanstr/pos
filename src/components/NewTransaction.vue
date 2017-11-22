@@ -30,11 +30,11 @@
         label="Quantity">
         <div class="row">
           <div class="col-6 row">
-            <q-btn round small color="secondary" icon="remove" class="col-2" />
+            <q-btn round small color="secondary" icon="remove" class="col-2"  @click="decrementQty()" />
             <span class="col-1" />
             <q-input v-model="qty" :min="1" :max="100" type="number"  class="col-2 text-center" />
             <span class="col-1" />
-            <q-btn round small color="secondary" icon="add" class="col-2" />
+            <q-btn round small color="secondary" icon="add" class="col-2" @click="incrementQty()" />
           </div>
         </div>
       </q-field>
@@ -404,6 +404,14 @@
         this.$nextTick(function () {
           this.$emit('transactionSaved', [this.newTransaction, this.newItems, this.currPage])
         })
+      },
+
+      decrementQty () {
+        if (this.qty > 0) this.qty--
+      },
+
+      incrementQty () {
+        if (this.qty < 100) this.qty++
       },
 
       loadTransactionIntoTable () {
