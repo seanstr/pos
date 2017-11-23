@@ -5,24 +5,24 @@
         <q-card inline class="col-3 text-dark" flat>
           <q-card-main>
             <div class="row">
-              <span class="col-4 text-bold">Tx#</span>
-              <span class="col-3">{{tx.id}}</span>
-              <span class="col-1 text-bold">@</span>
+              <span class="col-3 text-bold">Tx#</span>
+              <span class="col-3" style="text-align: right;">{{'00000'+tx.id}}</span>
+              <span class="col-3 text-bold">Time:</span>
               <span class="col">{{('0' + new Date(tx.txTime).getHours()).slice(-2) + ':' + ('0' + new Date(tx.txTime).getMinutes()).slice(-2)}}</span>
             </div>
             <div class="row">
-              <span class="col-4 text-bold">Tx Total</span>
-              <span class="col">{{tx.total}}</span>
+              <span class="col-3 text-bold">Tx Total</span>
+              <span class="col-3" style="text-align: right;">{{tx.totalNoTax.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}}</span>
             </div>
             <div v-if="tx.pp_or_pl == 'pl'" class="row">
-              <span class="offset-3" />
+              <span class="offset-2" />
               <span class="col-1 text-bold">+</span>
-              <span id="tx-tax" class="col">{{tx.tax}}</span>
+              <span id="tx-tax" class="col-3" style="text-align: right;">{{tx.tax.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}}</span>
             </div>
             <div v-if="tx.pp_or_pl == 'pl'" class="row">
-              <span class="offset-3" />
+              <span class="offset-2" />
               <span class="col-1 text-bold">=</span>
-              <span id="tx-total" class="col">{{tx.total + tx.tax}}</span>
+              <span id="tx-total" class="col-3" style="text-align: right;">{{tx.total.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}}</span>
             </div>
             <div class="row">
               <span class="col">{{tx.pp_or_pl}}</span>
@@ -39,15 +39,15 @@
               </div>
               <div class="row">
                 <span class="col-2 text-bold text-black">Qty</span>
-                <span class="col-10 text-black">{{item.qty}}</span>
+                <span class="col-1 text-black" style="text-align: right;">{{item.qty}}</span>
               </div>
               <div class="row">
                 <span class="col-2 text-bold text-black">Price</span>
-                <span id="tx-total" class="col-10 text-black">{{item.price}}</span>
+                <span id="tx-total" class="col-10 text-black" style="text-align: right;">{{item.price.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}}</span>
               </div>
               <div v-if="tx.pp_or_pl == 'pl'" class="row">
                 <span class="col-2 text-bold text-black">Tax</span>
-                <span id="tx-total" class="col-10 text-black">{{item.tax}}</span>
+                <span id="tx-total" class="col-10 text-black" style="text-align: right;">{{item.tax.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}}</span>
               </div>
               <div class="row">
                 <q-card-separator />

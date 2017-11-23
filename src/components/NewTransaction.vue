@@ -289,6 +289,7 @@
           salesperson: 1,
           pp_or_pl: 0,
           total: 0,
+          totalNoTax: 0,
           tax: 0
         }
       },
@@ -297,7 +298,7 @@
         this.productTypeSelected = productType
         this.productType = productType
         this.selectedProductTypeImage = './statics/' + productType.img
-        alert(this.selectedProductTypeImage)
+        // alert(this.selectedProductTypeImage)
         this.productTypeMessage = productType.name + ' selected'
         this.$refs.chooseItem.open()
       },
@@ -325,6 +326,7 @@
           qty: this.qty,
           price: this.price,
           tax: _tax,
+          totalNoTax: this.price * this.qty,
           total: (this.price + (this.price * _tax)) * this.qty,
           runningTotal: this.runningTotal += (this.price + (this.price * _tax)) * this.qty
         })
@@ -350,6 +352,7 @@
             qty: item.qty,
             price: item.price,
             tax: item.price * _tax * item.qty,
+            totalNoTax: item.price * item.qty,
             total: (item.price + (item.price * _tax)) * item.qty,
             runningTotal: _runningTotal + _runningTotalTax
           })
@@ -358,12 +361,14 @@
         this.runningTotal = _runningTotal
         this.transactionTax = _runningTotalTax
         this.transactionTotal = this.runningTotal + this.transactionTax
+        this.transactionTotalNoTax = this.runningTotal
       },
 
       saveTransaction () {
         let _tfpData = this.tfpData
         this.newTransaction.pp_or_pl = this.pp ? 'pp' : 'pl'
         this.newTransaction.total = this.transactionTotal
+        this.newTransaction.totalNoTax = this.transactionTotalNoTax
         this.newTransaction.tax = this.transactionTax
         _tfpData.transactions[this.newTransaction.id] = this.newTransaction
 
