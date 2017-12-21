@@ -11,42 +11,63 @@
     </q-toolbar>
 
     <div slot="right">
-      <q-list no-border link inset-separator>
-        <q-list-header>Day Setup</q-list-header>
-          <q-list item-separator link>
-            <q-item @click="openDayStart()">
-              <q-item-main label="Start the day" />
-            </q-item>
-            <q-item @click="saveToLocalStorage()">
-              <q-item-main label="Save Data" />
-            </q-item>
-            <q-item @click="clearLocalStorageTransactions()">
-              <q-item-main label="Clear Transaction Data" />
-            </q-item>
-            <q-item @click="clearLocalStorageDayInfo()">
-              <q-item-main label="Clear DayInfo Data" />
-            </q-item>
-            <q-item @click="reloadTFPData()">
-              <q-item-main label="Reload Data from File" />
-            </q-item>
-            <q-item 
-              @click="$refs.basicModal.open()">
-              <q-item-main label="Display TFP Data" />
-            </q-item>
-          </q-list>
-      </q-list>
+      <q-item @click="openDayStart()">
+        <q-item-side icon="schedule" />
+        <q-item-main label="Start the day" />
+      </q-item>
+      <q-collapsible indent icon="settings" closed label="Administer Lists">
+        <q-side-link item to="route" exact>
+          <q-item-main label="Go to some other Route" />
+        </q-side-link>        
+        <q-list item-separator link highlight>
+          <q-item link @click="maintainProductTypes()">
+            <q-item-main label="Product Types" />
+          </q-item>
+          <q-item @click="maintainProducts()">
+            <q-item-main label="Products" />
+          </q-item>
+          <q-item @click="maintainMarkets()">
+            <q-item-main label="Markets" />
+          </q-item>
+          <q-item @click="maintainPersons()">
+            <q-item-main label="Persons" />
+          </q-item>
+          <q-item @click="maintainTeams()">
+            <q-item-main label="Teams" />
+          </q-item>
+        </q-list>
+      </q-collapsible>
+
+      <q-collapsible indent icon="archive" closed label="Data Maint" >
+        <q-list item-separator link>
+          <q-item @click="saveToLocalStorage()">
+            <q-item-main label="Save Data" />
+          </q-item>
+          <q-item @click="clearLocalStorageTransactions()">
+            <q-item-main label="Clear Transaction Data" />
+          </q-item>
+          <q-item @click="clearLocalStorageDayInfo()">
+            <q-item-main label="Clear DayInfo Data" />
+          </q-item>
+          <q-item @click="reloadTFPData()">
+            <q-item-main label="Reload Data from File" />
+          </q-item>
+          <q-item 
+            @click="$refs.basicModal.open()">
+            <q-item-main label="Display TFP Data" />
+          </q-item>
+        </q-list>
+      </q-collapsible>
     </div>
 
     <q-btn v-if="page == 'transactions'" icon-right="add" @click="startNewTransaction()" color="primary" class="full-width">Start New Transaction</q-btn>
     <q-btn v-if="page == 'new-transactions'" icon-left="navigate_before" @click="page = 'transactions'" color="primary" class="full-width">Back to Transaction List</q-btn>
 
     <day-start ref="dayStart" class="full-width" :currentShowId="currentShowId" :currentShow="currentShow" :tfpData="tfpData" v-on:daySaved="daySaved"></day-start>
-
     <daily-summary ref="dailySummary" :currentShow="currentShow" :tfpData="tfpData" :currentShowID="currentShowId"></daily-summary>
-
     <transactions ref="transactions" :page="page" :tfpData="tfpData" v-on:editTransaction="editTransaction" v-on:deleteTransaction="deleteTransaction"></transactions>
-
     <newTransaction ref="newTransaction" :txId="txId" :txEdit="txEdit" :tfpData="tfpData" :showId="currentShowId" v-on:transactionSaved="transactionSaved"></newTransaction>
+    <productTypeMaint ref="productTypeMaint" :tfpData="tfpData" ></productTypeMaint>
 
     <q-modal ref="basicModal">
       <h4>Current Data View</h4>
@@ -67,15 +88,18 @@
     LocalStorage,
 
     QBtn,
+    QCollapsible,
     QIcon,
     QInput,
     QItem,
-    QItemSide,
     QItemMain,
+    QItemSide,
+    QItemTile,
     QLayout,
     QList,
     QListHeader,
     QModal,
+    QSideLink,
     QToolbar,
     QToolbarTitle
   } from 'quasar'
@@ -90,6 +114,7 @@
   import Transactions from './Transactions.vue'
   import DayStart from './DayStart.vue'
   import NewTransaction from './NewTransaction.vue'
+  import ProductTypeMaint from './ProductTypeMaint.vue'
 
   export default {
     name: 'app',
@@ -101,22 +126,26 @@
       LocalStorage,
 
       QBtn,
+      QCollapsible,
       QIcon,
       QInput,
       QItem,
-      QItemSide,
       QItemMain,
+      QItemSide,
+      QItemTile,
       QLayout,
       QList,
       QListHeader,
       QModal,
+      QSideLink,
       QToolbar,
       QToolbarTitle,
 
       DailySummary,
       Transactions,
       DayStart,
-      NewTransaction
+      NewTransaction,
+      ProductTypeMaint
     },
 
     data () {
@@ -171,16 +200,16 @@
 
     mounted: function () {
       if (this.tfpData == null) {
-        alert('tfpData null')
+        // alert('tfpData null')
         this.tfpData = this.TpfData
-        alert(tfpData)
+        // alert(tfpData)
       }
       else {
         this.calculateTotal()
       }
       this.txId = Math.max(...Object.keys(tfpData.transactions).map(k => tfpData.transactions[k]['id']))
       if (this.txId === Number.POSITIVE_INFINITY || this.txId === Number.NEGATIVE_INFINITY) this.txId = 0
-      alert('TFS mounted: ' + this.txId)
+      // alert('TFS mounted: ' + this.txId)
       this.currentShowId = Math.max(...Object.keys(tfpData.dayInfo).map(k => tfpData.dayInfo[k]['id']))
       if (this.currentShowId === Number.POSITIVE_INFINITY || this.currentShowId === Number.NEGATIVE_INFINITY) this.currentShowId = 0
     },
@@ -296,11 +325,28 @@
 
       transactionSaved (data) {
         // this.newTransaction, this.newItems, 'transactions'
-        alert('in transactionSaved')
-        alert(JSON.stringify(data[0]))
+        // alert('in transactionSaved')
+        // alert(JSON.stringify(data[0]))
         this.txId = data[0].id
         this.page = data[2]
         this.calculateTotal()
+      },
+
+      maintainProductTypes () {
+        this.$refs.productTypeMaint.open()
+      },
+
+      maintainProducts () {
+
+      },
+      maintainMarkets () {
+
+      },
+      maintainPersons () {
+
+      },
+      maintainTeams () {
+
       }
     }
   }
