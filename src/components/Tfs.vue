@@ -15,7 +15,7 @@
         <q-item-side icon="schedule" />
         <q-item-main label="Start the day" />
       </q-item>
-      <q-collapsible indent icon="settings" closed label="Administer Lists">
+      <q-collapsible indent icon="settings" opened label="Administer Lists">
         <q-side-link item to="route" exact>
           <q-item-main label="Go to some other Route" />
         </q-side-link>        
@@ -64,10 +64,10 @@
     <q-btn v-if="page == 'new-transactions'" icon-left="navigate_before" @click="page = 'transactions'" color="primary" class="full-width">Back to Transaction List</q-btn>
 
     <day-start ref="dayStart" class="full-width" :currentShowId="currentShowId" :currentShow="currentShow" :tfpData="tfpData" v-on:daySaved="daySaved"></day-start>
-    <daily-summary ref="dailySummary" :currentShow="currentShow" :tfpData="tfpData" :currentShowID="currentShowId"></daily-summary>
+    <daily-summary v-if="page == 'transactions' || page == 'new-transactions'" ref="dailySummary" :currentShow="currentShow" :tfpData="tfpData" :currentShowID="currentShowId"></daily-summary>
     <transactions ref="transactions" :page="page" :tfpData="tfpData" v-on:editTransaction="editTransaction" v-on:deleteTransaction="deleteTransaction"></transactions>
-    <newTransaction ref="newTransaction" :txId="txId" :txEdit="txEdit" :tfpData="tfpData" :showId="currentShowId" v-on:transactionSaved="transactionSaved"></newTransaction>
-    <productTypeMaint ref="productTypeMaint" :tfpData="tfpData" ></productTypeMaint>
+    <newTransaction v-if="page == 'new-transactions'" ref="newTransaction" :txId="txId" :txEdit="txEdit" :tfpData="tfpData" :showId="currentShowId" v-on:transactionSaved="transactionSaved"></newTransaction>
+    <product-type-maint ref="productTypeMaint" class="full-width" :tfpData="tfpData" :page="page"></product-type-maint>
 
     <q-modal ref="basicModal">
       <h4>Current Data View</h4>
@@ -333,7 +333,9 @@
       },
 
       maintainProductTypes () {
-        this.$refs.productTypeMaint.open()
+        this.$refs.layout.hideRight()
+        this.page = 'productTypes'
+        // this.$refs.productTypeMaint.open()
       },
 
       maintainProducts () {
