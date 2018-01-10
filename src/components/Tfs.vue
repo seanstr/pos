@@ -67,7 +67,7 @@
     <daily-summary v-if="page == 'transactions' || page == 'new-transactions'" ref="dailySummary" :currentShow="currentShow" :tfpData="tfpData" :currentShowID="currentShowId"></daily-summary>
     <transactions ref="transactions" :page="page" :tfpData="tfpData" v-on:editTransaction="editTransaction" v-on:deleteTransaction="deleteTransaction"></transactions>
     <newTransaction v-if="page == 'new-transactions'" ref="newTransaction" :txId="txId" :txEdit="txEdit" :tfpData="tfpData" :showId="currentShowId" v-on:transactionSaved="transactionSaved"></newTransaction>
-    <product-type-maint ref="productTypeMaint" class="full-width" :tfpData="tfpData" :page="page"></product-type-maint>
+    <product-type-maint ref="productTypeMaint" class="full-width" :current = "{}" :tfpData="tfpData" :page="page"></product-type-maint>
 
     <q-modal ref="basicModal">
       <h4>Current Data View</h4>
