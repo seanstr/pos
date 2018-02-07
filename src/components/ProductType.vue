@@ -73,7 +73,7 @@
     },
 
     mounted: function () {
-      alert('in mounted')
+      alert('in ProductType.mounted')
       alert(this.modalOpen)
       if (!this.current) {
         alert(this.current)
@@ -91,24 +91,6 @@
     methods: {
       open () {
         // this.$refs.productType.open()
-      },
-
-      save () {
-        alert('in save')
-        let _id = Math.max(...Object.keys(this.tfpData.ProductTypes).map(k => this.tfpData.ProductTypes[k]['id']))
-
-        this.productType = {
-          id: _id++,
-          name: this.current.name,
-          desc: this.current.desc,
-          img: this.current.img,
-          dateCreated: Date.now(),
-          dateModified: Date.now()
-        }
-        this.tfpData.dayInfo[_id] = this.newDayStart
-
-        this.$emit('saved', this.productType)
-        this.$refs.productType.close()
       }
     }
   }

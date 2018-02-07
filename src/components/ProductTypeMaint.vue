@@ -1,13 +1,13 @@
 <template>
   <div ref="productTypeMaint" v-if="page == 'productTypes'" class="row">
+    <q-btn round color="primary" @click="addNewProductType()" class="fixed" style="right: 18px; bottom: 18px">
+      <q-icon name="add" />
+    </q-btn>
     <q-btn icon-right="add" @click="addNewProductType()" color="primary" class="full-width">Add New Product Type</q-btn>
-
-    <product-type ref="productType" class="full-width" :current="{}" :tfpData="tfpData"></product-type>
-
     <q-card flat class="row col-lg-12">
       <q-card-title>Product Types</q-card-title>
     </q-card>
-    <div id="productTypes" v-for="item in tfpData.productTypes" v-bind:key="item.name" class="row col-lg-6">
+    <div id="productTypes" v-for="item in productTypes" v-bind:key="item.name" class="row col-lg-6">
       <q-card class="row col-lg-12">
         <q-card-main class="row col-sm-8 col-lg-12">
           <div class="col-sm-12 col-lg-7">
@@ -49,10 +49,6 @@
         </q-card-title>
         <q-card-separator />
         <q-card-main ref="product-type">
-          <q-field label="Id">
-            <q-input v-model="current.id"></q-input>
-          </q-field>
-
           <q-field label="Name">
             <q-input v-model="current.name" placeholder="name of the product type"></q-input>
           </q-field>
@@ -66,7 +62,7 @@
           </q-field>
 
           <q-btn icon-right="save" @click="save()" color="primary">Save</q-btn>
-          <q-btn icon-right="cancel" @click="$refs.dayStart.close()" color="primary">Close</q-btn>
+          <q-btn icon-right="cancel" @click="$refs.productTypeModal.close()" color="primary">Close</q-btn>
         </q-card-main>
       </q-card>
     </q-modal>
@@ -91,8 +87,6 @@
     QSelect
   } from 'quasar'
 
-  import ProductType from './ProductType.vue'
-
   export default {
     components: {
       date,
@@ -108,24 +102,28 @@
       QInlineDatetime,
       QInput,
       QModal,
-      QSelect,
-      ProductType
+      QSelect
     },
 
     props: ['tfpData', 'page'],
 
     data () {
       return {
+        productTypes: this.tfpData.productTypes,
         modalOpen: false,
-        current: {}
+        current: {
+          id: 0,
+          name: '',
+          desc: '',
+          img: '',
+          dateCreated: Date.now(),
+          dateModified: Date.now()
+        }
       }
     },
 
     mounted: function () {
-      alert('in mounted')
-      // alert(this.modalOpen)
       if (!this.current) {
-        alert(this.current)
         this.current = {
           id: 0,
           name: '',
@@ -142,8 +140,34 @@
 
     methods: {
       addNewProductType () {
-        alert('calling productTypeModal')
-        this.$refs.productType.open()
+        this.current = {
+          id: 0,
+          name: '',
+          desc: '',
+          img: '',
+          dateCreated: Date.now(),
+          dateModified: Date.now()
+        }
+        this.$refs.productTypeModal.open()
+      },
+      save () {
+        let _id = Math.max(...Object.keys(this.tfpData.productTypes).map(k => this.tfpData.productTypes[k]['id'])) + 1
+        this.newRec = {
+          id: _id,
+          name: this.current.name,
+          desc: this.current.desc,
+          img: this.current.img,
+          dateCreated: Date.now(),
+          dateModified: Date.now()
+        }
+        this.$refs.productTypeModal.close()
+
+        this.tfpData.productTypes[_id] = this.newRec
+        this.productTypes = this.tfpData.productTypes
+
+        this.$nextTick(function () {
+          this.$emit('productTypeSaved', [this.newRec, this.tfpData])
+        })
       }
     }
   }

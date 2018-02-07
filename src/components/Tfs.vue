@@ -16,10 +16,10 @@
         <q-item-main label="Start the day" />
       </q-item>
       <q-collapsible indent icon="settings" opened label="Administer Lists">
-        <q-side-link item to="route" exact>
-          <q-item-main label="Go to some other Route" />
-        </q-side-link>        
         <q-list item-separator link highlight>
+          <q-item link @click="page = 'transactions'">
+            <q-item-main label="Transactions" />
+          </q-item>
           <q-item link @click="maintainProductTypes()">
             <q-item-main label="Product Types" />
           </q-item>
