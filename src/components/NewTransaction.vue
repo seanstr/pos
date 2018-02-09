@@ -47,6 +47,7 @@
 
     <q-card-separator />
 
+  <q-modal class="minimized" ref="finishTx" :content-css="{minWidth: '20vw', minHeight: '40vh'}">
     <q-card-main class="bg-light" ref="finish-tx-table">
       <q-card-title>Transaction Items</q-card-title>
       <q-data-table class="width-1of1 auto" style="border: none;" :data="newItems" :config="config" :columns="columns">
@@ -81,6 +82,8 @@
         <q-btn icon-right="add" @click="transactionList()" color="primary">Back to Transaction List</q-btn>
       </q-card>
     </q-collapsible>
+  </q-modal>
+
   </div>
 </template>
 
@@ -274,9 +277,9 @@
 
     methods: {
       startNewTransaction (_txId) {
-        alert('_txId = ' + _txId)
+        // alert('_txId = ' + _txId)
         this.currTx = _txId
-        alert('NewTransaction startNewTransaction: ' + this.currTx)
+        // alert('NewTransaction startNewTransaction: ' + this.currTx)
         this.currPage = 'new-transactions'
         this.newItems = []
         this._txId = this.currTx
@@ -316,6 +319,8 @@
       },
 
       finish () {
+        this.$refs.finishTx.open()
+
         this.qtyMessage = this.qty + ' chosen'
         let _tax = this.pp ? 0 : this.taxRate
         this.newItems.push({
@@ -393,12 +398,17 @@
 
       saveAndAddNew () {
         this.finish()
+        this.$refs.finishTx.close()
         this.$refs.chooseProduct.open()
       },
 
       saveAndStartNew () {
         this.saveTransaction()
-        this.startNewTransaction(this.currTx++)
+        this.newTransaction = {}
+        this.resetSelected()
+        this.currTx++
+        this.startNewTransaction(this.currTx)
+        this.$refs.finishTx.close()
         this.$refs.chooseProduct.open()
       },
 
@@ -424,6 +434,20 @@
 
         // this.$refs.chooseQty.close()
         // this.calculateTransactionTotals()
+      },
+
+      resetSelected () {
+        this.selectedProductTypeImage = ''
+        this.productTypeMessage = 'Select a Product'
+        this.selectedItemImage = ''
+        this.itemMessage = 'Select an Item'
+        this.qtyMessage = 'Choose Quantity'
+
+        // item values
+        this.qty = 1
+        this.price = 0
+        this.tax = 0
+        this.total = 0
       }
     }
   }

@@ -61,6 +61,9 @@
     </div>
 
     <q-btn v-if="page == 'transactions'" icon-right="add" @click="startNewTransaction()" color="primary" class="full-width">Start New Transaction</q-btn>
+    <q-btn round color="primary" @click="startNewTransaction()" class="fixed" style="right: 18px; bottom: 18px">
+      <q-icon name="add" />
+    </q-btn>
     <q-btn v-if="page == 'new-transactions'" icon-left="navigate_before" @click="page = 'transactions'" color="primary" class="full-width">Back to Transaction List</q-btn>
 
     <day-start ref="dayStart" class="full-width" :currentShowId="currentShowId" :currentShow="currentShow" :tfpData="tfpData" v-on:daySaved="daySaved"></day-start>
@@ -238,7 +241,7 @@
         let _runningPpTotal = 0.0, _runningPlTotal = 0.0, _runningTotal = 0.0
         let _transactions = this.tfpData.transactions
         for (let tx of Object.keys(_transactions)) {
-          let itemTotal = _transactions[tx].total + _transactions[tx].tax
+          let itemTotal = _transactions[tx].totalNoTax + _transactions[tx].tax
           if (_transactions[tx].pp_or_pl === 'pl') _runningPlTotal += itemTotal
           if (_transactions[tx].pp_or_pl === 'pp') _runningPpTotal += itemTotal
           _runningTotal += itemTotal

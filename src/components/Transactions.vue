@@ -68,6 +68,7 @@
 
 <script>
   import {
+    Dialog,
     QBtn,
     QCard,
     QCardActions,
@@ -123,7 +124,19 @@
       },
 
       deleteTransaction (tx) {
-        this.$emit('deleteTransaction', [tx])
+        Dialog.create({
+          title: 'Delete Transaction',
+          message: 'Did you want to delete this transaction?',
+          buttons: [
+            'Cancel',
+            {
+              label: 'Delete',
+              handler: () => {
+                this.$emit('deleteTransaction', [tx])
+              }
+            }
+          ]
+        })
       },
 
       formatCurrency (value) {

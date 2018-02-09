@@ -7,7 +7,7 @@
     <q-card flat class="row col-lg-12">
       <q-card-title>Product Types</q-card-title>
     </q-card>
-    <div id="productTypes" v-for="item in productTypes" v-bind:key="item.name" class="row col-lg-6">
+    <div id="productTypes" v-for="item in pts" v-bind:key="item.id" class="row col-lg-6">
       <q-card class="row col-lg-12">
         <q-card-main class="row col-sm-8 col-lg-12">
           <div class="col-sm-12 col-lg-7">
@@ -81,6 +81,7 @@
     QCardTitle,
     QDatetime,
     QField,
+    QIcon,
     QInlineDatetime,
     QInput,
     QModal,
@@ -99,6 +100,7 @@
       QCardSeparator,
       QDatetime,
       QField,
+      QIcon,
       QInlineDatetime,
       QInput,
       QModal,
@@ -109,7 +111,7 @@
 
     data () {
       return {
-        productTypes: this.tfpData.productTypes,
+        pts: {},
         modalOpen: false,
         current: {
           id: 0,
@@ -133,6 +135,7 @@
           dateModified: Date.now()
         }
       }
+      this.pts = this.tfpData.productTypes
     },
 
     computed: {
@@ -150,8 +153,13 @@
         }
         this.$refs.productTypeModal.open()
       },
+
       save () {
-        let _id = Math.max(...Object.keys(this.tfpData.productTypes).map(k => this.tfpData.productTypes[k]['id'])) + 1
+        // let _id = Math.max(...Object.keys(this.productTypes).map(k => this.productTypes[k]['id'])) + 1
+        let _id = Math.max(...Object.keys(this.pts).map(k => this.pts[k]['id'])) + 1
+        let _productTypes = this.pts
+        let _tfpData = this.tfpData
+
         this.newRec = {
           id: _id,
           name: this.current.name,
@@ -160,10 +168,20 @@
           dateCreated: Date.now(),
           dateModified: Date.now()
         }
-        this.$refs.productTypeModal.close()
 
-        this.tfpData.productTypes[_id] = this.newRec
-        this.productTypes = this.tfpData.productTypes
+        _productTypes[_id] = this.newRec
+        alert(JSON.stringify(_productTypes))
+
+        this.pts = _productTypes
+        alert(JSON.stringify(this.pts))
+
+        _tfpData.productTypes = _productTypes
+        alert(JSON.stringify(this.tfpData.productTypes))
+
+        this.tfpData = _tfpData
+        alert(JSON.stringify(this.tfpData.productTypes))
+
+        this.$refs.productTypeModal.close()
 
         this.$nextTick(function () {
           this.$emit('productTypeSaved', [this.newRec, this.tfpData])

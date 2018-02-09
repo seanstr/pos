@@ -99,7 +99,8 @@
         "16": { "id": 16, "name": "Edmonton Butterdome", "organization": "Signature", "location": "Edmonton, AB" },
         "17": { "id": 17, "name": "Toronto One of a Kind", "organization": "", "location": "Toronto, AB" },
         "18": { "id": 18, "name": "Ottawa Craft Show", "organization": "", "location": "Ottawa, AB" },
-        "19": { "id": 19, "name": "Millarville Christmas Market", "organization": "", "location": "Millarville, AB" }
+        "19": { "id": 19, "name": "Millarville Christmas Market", "organization": "", "location": "Millarville, AB" },
+        "20": { "id": 20, "name": "Calgary Night Market", "organization": "", "location": "Calgary, AB"}
     },
     "dayInfo": {
         "1": { "id": 1, "marketId": 1, "showDate": "2017-06-17" },
@@ -111,7 +112,9 @@
         "2": { "id": 2, "name": "Pete Tracy" },
         "3": { "id": 3, "name": "Jan Tracy" },
         "4": { "id": 4, "name": "Zack" },
-        "5": { "id": 5, "name": "Carol" }
+        "5": { "id": 5, "name": "Carol" },
+        "6": { "id": 6, "name": "Trent" },
+        "7": { "id": 7, "name": "Allison" }
     },
 
     "dayInfoPersons": {
@@ -122,21 +125,18 @@
         "0": { "id": 0, "name": "team not selected", "persions": [] },
         "1": { "id": 1, "name": "Team Sean", "persons": [1, 5] },
         "2": { "id": 2, "name": "Team Tracy", "persons": [2, 3] },
-        "3": { "id": 2, "name": "Team Pete/Sean", "persons": [1, 2] },
-        "4": { "id": 2, "name": "Team Fabulous Four", "persons": [1, 2, 3, 5] },
-        "5": { "id": 1, "name": "Team Forever Alone Sean", "persons": [1] },
-        "6": { "id": 1, "name": "Team Forever Alone Pete", "persons": [1] },
-        "7": { "id": 1, "name": "Team Forever Alone Jan", "persons": [1] },
-        "8": { "id": 2, "name": "Team Jan/Carol", "persons": [1, 5] },
-        "9": { "id": 2, "name": "Team Sean 2", "persons": [1, 4] }
+        "3": { "id": 3, "name": "Team Pete/Sean", "persons": [1, 2] },
+        "4": { "id": 4, "name": "Team Fabulous Four", "persons": [1, 2, 3, 5] },
+        "5": { "id": 5, "name": "Team Forever Alone Sean", "persons": [1] },
+        "6": { "id": 6, "name": "Team Forever Alone Pete", "persons": [1] },
+        "7": { "id": 7, "name": "Team Forever Alone Jan", "persons": [1] },
+        "8": { "id": 8, "name": "Team Jan/Carol", "persons": [1, 5] },
+        "9": { "id": 9, "name": "Team Sean/Zack", "persons": [1, 4] }
     },
 
     "transactions": {
-        "1": { "id": 1, "txTime": 900, "dayInfoId": 1, "user": 1, "personId": 1, "pp_or_pl": "pp", "total": 180, "tax": 0, "totalNoTax": 180 }
     },
 
     "transactionItems": {
-        "1": { "id": 1, "transactionId": 1, "productTypeId": 1, "productTypeDesc": "Pen", "productItemId": 1, "productItemDesc": "Lever 30/30", "qty": 1, "price": 75, "tax": 4.25 },
-        "2": { "id": 2, "transactionId": 1, "productTypeId": 1, "productTypeDesc": "Pen", "productItemId": 7, "productItemDesc": "Shotgun", "qty": 1, "price": 95, "tax": 4.75 }
     }
 }
